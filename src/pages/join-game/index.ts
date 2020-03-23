@@ -1,1 +1,1 @@
-export * from "./join-game";
+export { default } from "./join-game";

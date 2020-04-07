@@ -6,14 +6,12 @@ import Game from "./pages/game";
 
 const App = () => {
   return (
-    <div>
-      <BrowserRouter>
-        <Switch>
-          <Route path="/" exact children={<JoinGame />} />
-          <Route path="/game" children={Game} />
-        </Switch>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/" exact children={<JoinGame />} />
+        <Route path="/game" children={<Game />} />
+      </Switch>
+    </BrowserRouter>
   );
 };
 

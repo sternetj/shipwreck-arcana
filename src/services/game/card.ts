@@ -2,7 +2,7 @@ export class Card {
   constructor(public name: CardName) {}
 
   get path() {
-    return `${this.name}.png`;
+    return `cards/${this.name}.png`;
   }
 }
 
@@ -22,7 +22,7 @@ type CardName =
   | "leviathan"
   | "the-hours"
   | "the-prophet"
-  | "midnigt"
+  | "midnight"
   | "the-huntress"
   | "the-rider"
   | "the-ash"

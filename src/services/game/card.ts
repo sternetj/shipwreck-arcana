@@ -1,8 +1,11 @@
 export class Card {
-  constructor(public name: CardName) {}
+  constructor(public name: CardName, public power?: FadePower) {}
 
-  get path() {
+  get cardPath() {
     return `cards/${this.name}.png`;
+  }
+  get powerPath() {
+    return `powers/${this.power}.png`;
   }
 }
 
@@ -39,8 +42,27 @@ type CardName =
   | "the-wish"
   | "the-captain"
   | "the-lord"
-  | "thief"
+  | "the-thief"
   | "the-chalice"
   | "the-mirror"
   | "the-deep"
   | "the-musicians";
+
+type FadePower =
+  | "1-2-3"
+  | "1-4-7"
+  | "3-4-5"
+  | "5-6-7"
+  | "amplify"
+  | "cycle"
+  | "discard-lower"
+  | "exile"
+  | "help"
+  | "higher-than"
+  | "old"
+  | "plus-1"
+  | "relocate"
+  | "same"
+  | "slow"
+  | "twice"
+  | "within-2";

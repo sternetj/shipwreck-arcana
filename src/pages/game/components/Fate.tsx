@@ -1,9 +1,12 @@
 import React, { FC } from "react";
 import { styled } from "@material-ui/core";
+import { useDrag } from "react-dnd";
 
 export const Fate: FC<{ num: FateVal }> = ({ num }) => {
+  const [, drag] = useDrag({ item: { type: "fate", value: num } });
   return (
     <Tile
+      ref={drag}
       style={{ background: `url('pieces/fates.png') ${tileToSprite[num]}` }}
     />
   );
@@ -15,7 +18,7 @@ const Tile = styled("div")({
   margin: 5,
 });
 
-type FateVal = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type FateVal = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 const tileToSprite = {
   1: "83px -1px",

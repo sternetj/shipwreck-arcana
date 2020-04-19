@@ -1,36 +1,57 @@
-import React, { FC, useState, HTMLProps, ImgHTMLAttributes } from "react";
+import React, { FC, useState, ImgHTMLAttributes } from "react";
 import { Card as CardClass } from "../../../services/game";
-import { styled } from "@material-ui/core";
+import { styled, Grid } from "@material-ui/core";
+import { useDrop } from "react-dnd";
+import { Fate, FateVal } from "./Fate";
 
-interface Props {
+export interface CardProps {
   card: CardClass;
-  dropTarget?: boolean;
+  allowsDrop?: boolean;
+  onClick?: (card: CardClass) => any;
 }
 
-export const Card: FC<Props> = ({ card, dropTarget }) => {
-  const [dropTargetStyles, setStyles] = useState<React.CSSProperties>({});
-  let additionalProps: typeof Img.defaultProps = {};
+export const Card: FC<CardProps> = ({ card, allowsDrop = false, onClick }) => {
+  const [fates, setFates] = useState<FateVal[]>([]);
+  const [{ isOver, isOverCurrent }, drop] = useDrop({
+    accept: "fate",
+    canDrop: () => allowsDrop,
+    drop(item, monitor) {
+      setFates(fates.concat((item as any).value));
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      isOverCurrent: monitor.isOver({ shallow: true }),
+    }),
+  });
 
-  if (dropTarget) {
-    additionalProps = {
-      ...additionalProps,
-      onDragEnter: () =>
-        setStyles({
-          boxShadow: "0px 0px 6px 6px lightskyblue",
-        }),
-      onDragLeave: () => setStyles({}),
+  let styles: React.CSSProperties = {};
+  if (allowsDrop && isOver) {
+    styles = {
+      boxShadow: "0px 0px 6px 6px lightskyblue",
     };
   }
 
   return (
-    <Img
-      {...additionalProps}
-      style={dropTargetStyles}
-      src={card.path}
-      alt={card.name}
-    />
+    <Grid direction="column">
+      <Img
+        ref={drop}
+        style={styles}
+        src={card.cardPath}
+        alt={card.name}
+        onClick={() => onClick && onClick(card)}
+      />
+      <FateRow container justify="center">
+        {fates.map((f, k) => (
+          <Fate key={k} num={f as any} />
+        ))}
+      </FateRow>
+    </Grid>
   );
 };
+
+const FateRow = styled(Grid)({
+  marginTop: -12,
+});
 
 const Img = styled("img")({
   boxSizing: "border-box",

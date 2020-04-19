@@ -1,19 +1,19 @@
 import React, { FC } from "react";
 import { Card as CardClass } from "../../../services/game";
-import { Card } from "./Card";
+import { Card, CardProps } from "./Card";
 import { Grid, styled } from "@material-ui/core";
 
 const theHours = new CardClass("the-hours");
 
-interface Props {
+type Props = Omit<CardProps, "card"> & {
   doom: number;
   points: number;
-}
+};
 
-export const Hours: FC<Props> = ({ doom, points }) => {
+export const Hours: FC<Props> = ({ doom, points, ...rest }) => {
   return (
     <Container>
-      <Card card={theHours} />
+      <Card {...rest} card={theHours} />
       <Doom />
       <Points />
     </Container>

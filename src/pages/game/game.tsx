@@ -11,16 +11,28 @@ import { Hours } from "./components/Hours";
 import { Fate } from "./components/Fate";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
+import { AdjustScore } from "./components/AdjustScore";
 
 const Game = () => {
   const { search } = useLocation();
   const { name } = qs.parse(search, { ignoreQueryPrefix: true });
   const [snapshot] = useObjectVal(getGame(name || ""));
   const [confirmFadeOpen, setConfirmFade] = useState(false);
+  const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
+  const [score, setScore] = useState({ points: 7, doom: 0 });
 
   const confirmFade = (slot: number) => (card: CardClass) => {
     console.log("fade", card);
     setConfirmFade(true);
+  };
+
+  const beginAdjustScore = () => {
+    setAdjustPointsOpen(true);
+  };
+
+  const adjustScore = (points: number, doom: number) => {
+    setScore({ points, doom });
+    setAdjustPointsOpen(false);
   };
 
   const closeConfirm = () => setConfirmFade(false);
@@ -33,7 +45,7 @@ const Game = () => {
           <Grid item>Player tiles</Grid>
           <Grid container item direction="row" wrap="nowrap">
             <Card card={cards[1]} />
-            <Hours doom={0} points={2} allowsDrop />
+            <Hours {...score} allowsDrop onClick={beginAdjustScore} />
             <Card card={cards[2]} allowsDrop onClick={confirmFade(1)} />
             <Card card={cards[3]} allowsDrop onClick={confirmFade(2)} />
             <Card card={cards[4]} allowsDrop onClick={confirmFade(3)} />
@@ -52,6 +64,13 @@ const Game = () => {
         open={confirmFadeOpen}
         onFade={closeConfirm}
         onCancel={closeConfirm}
+      />
+
+      <AdjustScore
+        open={adjustPointsOpen}
+        {...score}
+        onCancel={() => setAdjustPointsOpen(false)}
+        onUpdate={adjustScore}
       />
     </>
   );

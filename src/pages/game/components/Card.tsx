@@ -1,4 +1,4 @@
-import React, { FC, useState, ImgHTMLAttributes } from "react";
+import React, { FC, useState } from "react";
 import { Card as CardClass } from "../../../services/game";
 import { styled, Grid } from "@material-ui/core";
 import { useDrop } from "react-dnd";
@@ -32,7 +32,7 @@ export const Card: FC<CardProps> = ({ card, allowsDrop = false, onClick }) => {
   }
 
   return (
-    <Grid direction="column">
+    <Grid container direction="column" style={{ marginBottom: 19 }}>
       <Img
         ref={drop}
         style={styles}
@@ -50,11 +50,12 @@ export const Card: FC<CardProps> = ({ card, allowsDrop = false, onClick }) => {
 };
 
 const FateRow = styled(Grid)({
-  marginTop: -12,
+  marginTop: 0,
 });
 
 const Img = styled("img")({
   boxSizing: "border-box",
   width: "calc(16.667vw - 48px)",
   margin: 24,
+  marginBottom: 0,
 });

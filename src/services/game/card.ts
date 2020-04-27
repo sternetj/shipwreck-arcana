@@ -7,6 +7,10 @@ export class Card {
   get powerPath() {
     return `powers/${this.power}.png`;
   }
+
+  static from({ name, power }: { name: CardName; power: FadePower }) {
+    return new Card(name, power);
+  }
 }
 
 type CardName =

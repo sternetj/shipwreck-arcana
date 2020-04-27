@@ -1,11 +1,13 @@
 import * as firebase from "firebase";
 import { v4 as uuid } from "uuid";
+import { helpers } from "faker";
 import {
   uniqueNamesGenerator,
   adjectives,
   animals,
   names,
 } from "unique-names-generator";
+import { cards } from "./game/cards";
 
 const playerId = window.localStorage.getItem("playerId") || uuid();
 window.localStorage.setItem("playerId", playerId);
@@ -43,15 +45,42 @@ export const updateGame = (
   ref.set(val);
 };
 
+export function updateScore(
+  id: string,
+  points: { doom: number; points: number },
+) {
+  const ref = getGame(id);
+  ref.update(points);
+}
+
+export function fadeCard(id: string, points: { doom: number; points: number }) {
+  const ref = getGame(id);
+  ref.update(points);
+}
+
 export const createGame = (playerName: string) => {
   const name = uniqueName();
   const ref = databaseRef.child(name);
+  const deck = helpers.shuffle(cards);
+  const activeCards = {
+    1: deck.shift(),
+    2: deck.shift(),
+    3: deck.shift(),
+    4: deck.shift(),
+  };
+
   ref.set({
     started: false,
     creator: playerId,
+    powers: [],
+    deck,
+    cards: activeCards,
     players: {
       [playerId]: playerName,
     },
+    fates: helpers.shuffle(fates),
+    doom: 0,
+    points: 0,
   });
 
   return {
@@ -61,9 +90,9 @@ export const createGame = (playerName: string) => {
 };
 
 export const gameExists = async (gameId: string) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const ref = db.ref(gameId);
-    ref.once("value", function(snapshot) {
+    ref.once("value", function (snapshot) {
       resolve(snapshot.exists());
     });
   });
@@ -86,3 +115,5 @@ export const getGame = (gameId: string) => {
 
   return db.ref(gameId);
 };
+
+const fates = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7];

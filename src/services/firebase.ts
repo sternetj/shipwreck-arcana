@@ -74,6 +74,7 @@ export const createGame = (playerName: string) => {
     creator: playerId,
     powers: [],
     deck,
+    discard: [],
     cards: activeCards,
     players: {
       [playerId]: playerName,

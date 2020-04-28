@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import qs from "qs";
 import { useLocation } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
-import { Grid } from "@material-ui/core";
+import { Grid, CircularProgress } from "@material-ui/core";
 import { Card } from "./components/Card";
 import { ConfirmFade } from "./components/ConfirmFade";
 import { Hours } from "./components/Hours";
@@ -15,16 +15,17 @@ import { useGame } from "./hooks/use-game";
 const Game = () => {
   const { search } = useLocation();
   const { name } = qs.parse(search, { ignoreQueryPrefix: true });
-  const [confirmFadeOpen, setConfirmFade] = useState(false);
+  const [cardToFade, setCardToFade] = useState<1 | 2 | 3 | 4>();
   const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
-  const { value, updateScore } = useGame(name);
+  const { value, updateScore, fadeCard } = useGame(name);
 
-  const { points, doom, deck, cards } = value;
+  if (!value) return <CircularProgress />;
+
+  const { points, doom, deck, cards, powers } = value;
   const score = { points, doom };
 
-  const confirmFade = (slot: number) => (card: CardClass) => {
-    console.log("fade", card);
-    setConfirmFade(true);
+  const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
+    setCardToFade(slot);
   };
 
   const beginAdjustScore = () => {
@@ -36,7 +37,12 @@ const Game = () => {
     setAdjustPointsOpen(false);
   };
 
-  const closeConfirm = () => setConfirmFade(false);
+  const closeConfirm = () => setCardToFade(undefined);
+
+  const onFade = () => {
+    cardToFade && fadeCard(cardToFade);
+    closeConfirm();
+  };
 
   console.log(JSON.stringify(value, null, 2));
   return (
@@ -52,6 +58,11 @@ const Game = () => {
             <Card card={cards[3]} allowsDrop onClick={confirmFade(3)} />
             <Card card={cards[4]} allowsDrop onClick={confirmFade(4)} />
           </Grid>
+          <Grid container item direction="row" wrap="nowrap">
+            {(powers || []).map((power) => (
+              <Card card={power} showPower />
+            ))}
+          </Grid>
           <Grid container item justify="center">
             {fates.map((f) => (
               <Fate key={f} num={f as any} />
@@ -62,8 +73,8 @@ const Game = () => {
       </DndProvider>
 
       <ConfirmFade
-        open={confirmFadeOpen}
-        onFade={closeConfirm}
+        open={!!cardToFade}
+        onFade={onFade}
         onCancel={closeConfirm}
       />
 

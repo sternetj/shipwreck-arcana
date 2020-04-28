@@ -8,7 +8,8 @@ export class Card {
     return `powers/${this.power}.png`;
   }
 
-  static from({ name, power }: { name: CardName; power: FadePower }) {
+  static from<T extends Card>(v: T) {
+    const { name, power } = v || {};
     return new Card(name, power);
   }
 }

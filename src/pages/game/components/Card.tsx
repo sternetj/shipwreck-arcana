@@ -7,10 +7,16 @@ import { Fate, FateVal } from "./Fate";
 export interface CardProps {
   card: CardClass;
   allowsDrop?: boolean;
+  showPower?: boolean;
   onClick?: (card: CardClass) => any;
 }
 
-export const Card: FC<CardProps> = ({ card, allowsDrop = false, onClick }) => {
+export const Card: FC<CardProps> = ({
+  card,
+  allowsDrop = false,
+  onClick,
+  showPower = false,
+}) => {
   const [fates, setFates] = useState<FateVal[]>([]);
   const [{ isOver, isOverCurrent }, drop] = useDrop({
     accept: "fate",
@@ -36,8 +42,8 @@ export const Card: FC<CardProps> = ({ card, allowsDrop = false, onClick }) => {
       <Img
         ref={drop}
         style={styles}
-        src={card.cardPath}
-        alt={card.name}
+        src={showPower ? card.powerPath : card.cardPath}
+        alt={showPower ? card.power : card.name}
         onClick={() => onClick && onClick(card)}
       />
       <FateRow container justify="center">

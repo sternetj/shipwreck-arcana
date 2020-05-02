@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { Grid, Button, Typography, styled, TextField } from "@material-ui/core";
 import { useLocalStorage } from "./use-local-storage";
 
@@ -12,7 +12,7 @@ interface WelcomeProps {
   onBack: () => any;
 }
 
-const CreateGame: FC<WelcomeProps> = props => {
+const CreateGame: FC<WelcomeProps> = (props) => {
   const { onSubmit, label, title, dataKey, error } = props;
   const { placeholder = "Name", onBack } = props;
   const [name, setName] = useLocalStorage(dataKey, "");
@@ -26,8 +26,8 @@ const CreateGame: FC<WelcomeProps> = props => {
         value={name}
         error={!!error}
         helperText={error}
-        onKeyPress={e => e.key === "Enter" && onSubmit(name)}
-        onChange={e => setName(e.target.value)}
+        onKeyPress={(e) => e.key === "Enter" && onSubmit(name)}
+        onChange={(e) => setName(e.target.value)}
       />
       <Grid container direction="row" justify="space-evenly">
         <ActionButton onClick={() => onBack()}>Back</ActionButton>

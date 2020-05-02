@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { Card as CardClass } from "../../../services/game";
 import { styled, Grid } from "@material-ui/core";
 import { useDrop } from "react-dnd";
@@ -9,6 +9,7 @@ export interface CardProps {
   allowsDrop?: boolean;
   showPower?: boolean;
   onClick?: (card: CardClass) => any;
+  onDropFate?: (fate: FateVal) => any;
 }
 
 export const Card: FC<CardProps> = ({
@@ -16,17 +17,14 @@ export const Card: FC<CardProps> = ({
   allowsDrop = false,
   onClick,
   showPower = false,
+  onDropFate,
 }) => {
-  const [fates, setFates] = useState<FateVal[]>([]);
-  const [{ isOver, isOverCurrent }, drop] = useDrop({
+  const [{ isOver }, drop] = useDrop({
     accept: "fate",
     canDrop: () => allowsDrop,
-    drop(item, monitor) {
-      setFates(fates.concat((item as any).value));
-    },
+    drop: (item) => onDropFate && onDropFate((item as any).value),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
-      isOverCurrent: monitor.isOver({ shallow: true }),
     }),
   });
 
@@ -38,7 +36,7 @@ export const Card: FC<CardProps> = ({
   }
 
   return (
-    <Grid container direction="column" style={{ marginBottom: 19 }}>
+    <Grid direction="column" style={{ marginBottom: 19 }}>
       <Img
         ref={drop}
         style={styles}
@@ -47,7 +45,7 @@ export const Card: FC<CardProps> = ({
         onClick={() => onClick && onClick(card)}
       />
       <FateRow container justify="center">
-        {fates.map((f, k) => (
+        {card.fates.map((f, k) => (
           <Fate key={k} num={f as any} />
         ))}
       </FateRow>
@@ -56,12 +54,14 @@ export const Card: FC<CardProps> = ({
 };
 
 const FateRow = styled(Grid)({
+  maxWidth: 150,
   marginTop: 0,
 });
 
 const Img = styled("img")({
   boxSizing: "border-box",
-  width: "calc(16.667vw - 48px)",
-  margin: 24,
+  minHeight: 170,
+  height: "25vh",
+  margin: "24px",
   marginBottom: 0,
 });

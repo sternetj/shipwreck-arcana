@@ -1,5 +1,11 @@
+import { FateVal } from "../../pages/game/components/Fate";
+
 export class Card {
-  constructor(public name: CardName, public power?: FadePower) {}
+  constructor(
+    public name: CardName,
+    public power?: FadePower,
+    public fates: FateVal[] = [],
+  ) {}
 
   get cardPath() {
     return `cards/${this.name}.png`;
@@ -8,9 +14,13 @@ export class Card {
     return `powers/${this.power}.png`;
   }
 
+  addFate(fate: FateVal) {
+    this.fates.push(fate);
+  }
+
   static from<T extends Card>(v: T) {
-    const { name, power } = v || {};
-    return new Card(name, power);
+    const { name, power, fates } = v || {};
+    return new Card(name, power, fates);
   }
 }
 

@@ -10,18 +10,21 @@ import { Fate } from "./components/Fate";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import { AdjustScore } from "./components/AdjustScore";
-import { useGame } from "./hooks/use-game";
+import { useGame, CardIndex } from "./hooks/use-game";
+import { Bag } from "./components/Bag";
 
 const Game = () => {
   const { search } = useLocation();
   const { name } = qs.parse(search, { ignoreQueryPrefix: true });
   const [cardToFade, setCardToFade] = useState<1 | 2 | 3 | 4>();
   const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
-  const { value, updateScore, fadeCard } = useGame(name);
+  const [playerId] = useState(window.localStorage.getItem("playerId") || "");
+  const { value, updateScore, fadeCard, drawFate, playFate } = useGame(name);
 
   if (!value) return <CircularProgress />;
 
-  const { points, doom, deck, cards, powers } = value;
+  const { points, doom, deck, cards, powers, players } = value;
+  const { fates = [] } = players[playerId];
   const score = { points, doom };
 
   const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
@@ -50,23 +53,29 @@ const Game = () => {
       <DndProvider backend={Backend}>
         <Grid container direction="column" alignItems="center">
           <Grid item>Player tiles</Grid>
-          <Grid container item direction="row" wrap="nowrap">
+          <Grid container item justify="center">
             <Card card={deck[0]} />
             <Hours {...score} allowsDrop onClick={beginAdjustScore} />
-            <Card card={cards[1]} allowsDrop onClick={confirmFade(1)} />
-            <Card card={cards[2]} allowsDrop onClick={confirmFade(2)} />
-            <Card card={cards[3]} allowsDrop onClick={confirmFade(3)} />
-            <Card card={cards[4]} allowsDrop onClick={confirmFade(4)} />
+            {cardsIndices.map((i) => (
+              <Card
+                key={i}
+                card={cards[i]}
+                allowsDrop
+                onClick={confirmFade(i)}
+                onDropFate={(f) => playFate(playerId, i, f)}
+              />
+            ))}
           </Grid>
-          <Grid container item direction="row" wrap="nowrap">
+          <Grid container justify="center">
             {(powers || []).map((power) => (
               <Card card={power} showPower />
             ))}
           </Grid>
-          <Grid container item justify="center">
+          <Grid container item justify="center" alignItems="center">
             {fates.map((f) => (
               <Fate key={f} num={f as any} />
             ))}
+            <Bag onClick={() => drawFate(playerId)} />
           </Grid>
           <Grid item>Your tiles</Grid>
         </Grid>
@@ -88,11 +97,6 @@ const Game = () => {
   );
 };
 
-const fates = new Array(7).fill(1).map((_, i) => i + 1);
-
-interface GameState {
-  points: 0;
-  doom: 0;
-}
+const cardsIndices: CardIndex[] = [1, 2, 3, 4];
 
 export default Game;

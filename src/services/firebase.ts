@@ -35,29 +35,6 @@ const uniqueName = () =>
     length: 2,
   });
 
-export const updateGame = (
-  id = "games/1",
-  val = {
-    test: "value",
-  },
-) => {
-  const ref = databaseRef.child(id);
-  ref.set(val);
-};
-
-export function updateScore(
-  id: string,
-  points: { doom: number; points: number },
-) {
-  const ref = getGame(id);
-  ref.update(points);
-}
-
-export function fadeCard(id: string, points: { doom: number; points: number }) {
-  const ref = getGame(id);
-  ref.update(points);
-}
-
 export const createGame = (playerName: string) => {
   const name = uniqueName();
   const ref = databaseRef.child(name);
@@ -77,7 +54,10 @@ export const createGame = (playerName: string) => {
     discard: [],
     cards: activeCards,
     players: {
-      [playerId]: playerName,
+      [playerId]: {
+        playerName,
+        fates: [],
+      },
     },
     fates: helpers.shuffle(fates),
     doom: 0,
@@ -102,7 +82,10 @@ export const gameExists = async (gameId: string) => {
 export const joinGame = (gameId: string, playerName: string) => {
   const ref = db.ref(`${gameId}/players`);
   ref.update({
-    [playerId]: playerName,
+    [playerId]: {
+      playerName,
+      fates: [],
+    },
   });
 
   return {

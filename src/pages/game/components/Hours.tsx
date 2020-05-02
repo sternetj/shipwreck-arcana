@@ -32,14 +32,10 @@ const Token = styled("div")({
 });
 
 const Doom = styled(Token)({
-  left: "calc(100% - 20px)",
-  top: 0,
   backgroundColor: "#cd3133",
 });
 
 const Points = styled(Token)({
-  left: "calc(100% - 20px)",
-  top: "calc(50% - 20px)",
   backgroundColor: "#2d9966",
 });
 
@@ -50,23 +46,23 @@ const scoreToPos: { [k: number]: React.CSSProperties } = {
   },
   1: {
     left: "calc(100% - 20px)",
-    top: "calc(50% - 15px)",
+    top: "calc(max(12.5vh, 85px) - 39px)",
   },
   2: {
     left: "calc(100% - 20px)",
-    top: "calc(100% - 30px)",
+    top: "calc(max(25vh, 170px) - 69px)",
   },
   3: {
     left: "calc(50% - 15px)",
-    top: "calc(100% - 10px)",
+    top: "calc(max(25vh, 170px) - 64px)",
   },
   4: {
     left: -10,
-    top: "calc(100% - 30px)",
+    top: "calc(max(25vh, 170px) - 69px)",
   },
   5: {
     left: -10,
-    top: "calc(50% - 15px)",
+    top: "calc(max(12.5vh, 85px) - 39px)",
   },
   6: {
     left: -10,

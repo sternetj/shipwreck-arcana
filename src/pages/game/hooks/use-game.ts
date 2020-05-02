@@ -2,6 +2,7 @@ import { useObjectVal } from "react-firebase-hooks/database";
 import { getGame } from "../../../services/firebase";
 import { Card } from "../../../services/game";
 import { FateVal } from "../components/Fate";
+import { DropValue } from "../components/Card";
 
 export function useGame(id: string) {
   const ref = getGame(id);
@@ -22,27 +23,34 @@ export function useGame(id: string) {
     });
   };
 
-  const playFate = (playerId: string, index: CardIndex, fate: FateVal) => {
+  const playFate = (index: CardIndex, { value: fate, source }: DropValue) => {
     if (!value) return;
     const cardToUpdate = value.cards[index];
-    const current = value.players[playerId];
+    let playedOnHours = false;
 
-    current.fates = current.fates || [];
-    current.fates.splice(current.fates.indexOf(fate), 1);
+    if (source === "hours") {
+      source = 1;
+      playedOnHours = true;
+    }
+
+    if (typeof source === "string") {
+      const current = value.players[source];
+      current.fates = current.fates || [];
+      current.fates.splice(current.fates.indexOf(fate), 1);
+      value.players[source] = current;
+    } else {
+      value.cards[source].removeFate(fate);
+    }
+
     cardToUpdate.addFate(fate);
 
     ref.update({
+      playedOnHours,
       cards: {
         ...value.cards,
         [index]: cardToUpdate,
       },
-      players: {
-        ...value.players,
-        [playerId]: {
-          ...current,
-          fates: current.fates,
-        },
-      },
+      players: value.players,
     });
   };
 

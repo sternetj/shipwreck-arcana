@@ -18,6 +18,11 @@ export class Card {
     this.fates.push(fate);
   }
 
+  removeFate(fate: FateVal) {
+    const index = this.fates.indexOf(fate);
+    this.fates.splice(index, 1);
+  }
+
   static from<T extends Card>(v: T) {
     const { name, power, fates } = v || {};
     return new Card(name, power, fates);

@@ -3,16 +3,20 @@ import { Card as CardClass } from "../../../services/game";
 import { styled, Grid } from "@material-ui/core";
 import { useDrop } from "react-dnd";
 import { Fate, FateVal } from "./Fate";
+import { CardIndex } from "../hooks/use-game";
+import { BaseCard } from "./BaseCard";
 
 export interface CardProps {
+  index: CardIndex | "hours";
   card: CardClass;
   allowsDrop?: boolean;
   showPower?: boolean;
   onClick?: (card: CardClass) => any;
-  onDropFate?: (fate: FateVal) => any;
+  onDropFate?: (val: DropValue) => any;
 }
 
 export const Card: FC<CardProps> = ({
+  index,
   card,
   allowsDrop = false,
   onClick,
@@ -22,7 +26,7 @@ export const Card: FC<CardProps> = ({
   const [{ isOver }, drop] = useDrop({
     accept: "fate",
     canDrop: () => allowsDrop,
-    drop: (item) => onDropFate && onDropFate((item as any).value),
+    drop: (item) => onDropFate && onDropFate(item as DropValue),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
@@ -36,32 +40,28 @@ export const Card: FC<CardProps> = ({
   }
 
   return (
-    <Grid direction="column" style={{ marginBottom: 19 }}>
-      <Img
-        ref={drop}
-        style={styles}
-        src={showPower ? card.powerPath : card.cardPath}
-        alt={showPower ? card.power : card.name}
-        onClick={() => onClick && onClick(card)}
-      />
+    <BaseCard
+      card={card}
+      showPower={showPower}
+      ref={drop}
+      style={styles}
+      onClick={() => onClick && onClick(card)}>
       <FateRow container justify="center">
         {card.fates.map((f, k) => (
-          <Fate key={k} num={f as any} />
+          <Fate key={k} num={f as any} source={index} />
         ))}
       </FateRow>
-    </Grid>
+    </BaseCard>
   );
 };
 
+export interface DropValue {
+  type: "fate";
+  value: FateVal;
+  source: CardIndex | "hours" | string;
+}
+
 const FateRow = styled(Grid)({
   maxWidth: 150,
-  marginTop: 0,
-});
-
-const Img = styled("img")({
-  boxSizing: "border-box",
-  minHeight: 170,
-  height: "25vh",
-  margin: "24px",
-  marginBottom: 0,
+  margin: "0 auto",
 });

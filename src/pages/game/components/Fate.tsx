@@ -1,13 +1,17 @@
 import React, { FC } from "react";
 import { styled } from "@material-ui/core";
 import { useDrag } from "react-dnd";
-
-export const Fate: FC<{ num: FateVal }> = ({ num }) => {
-  const [, drag] = useDrag({ item: { type: "fate", value: num } });
+import { CardIndex } from "../hooks/use-game";
+interface Props {
+  num: FateVal;
+  source: CardIndex | string;
+}
+export const Fate: FC<Props> = ({ num: value, source }) => {
+  const [, drag] = useDrag({ item: { type: "fate", value, source } });
   return (
     <Tile
       ref={drag}
-      style={{ background: `url('pieces/fates.png') ${tileToSprite[num]}` }}
+      style={{ background: `url('pieces/fates.png') ${tileToSprite[value]}` }}
     />
   );
 };

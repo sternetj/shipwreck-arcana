@@ -5,7 +5,7 @@ import { Grid, styled } from "@material-ui/core";
 
 const theHours = new CardClass("the-hours");
 
-type Props = Omit<CardProps, "card"> & {
+type Props = Omit<CardProps, "card" | "index"> & {
   doom: number;
   points: number;
 };
@@ -13,7 +13,7 @@ type Props = Omit<CardProps, "card"> & {
 export const Hours: FC<Props> = ({ doom, points, ...rest }) => {
   return (
     <Container>
-      <Card {...rest} card={theHours} />
+      <Card {...rest} index="hours" card={theHours} />
       <Doom style={scoreToPos[doom]} />
       <Points style={scoreToPos[points]} />
     </Container>
@@ -42,31 +42,31 @@ const Points = styled(Token)({
 const scoreToPos: { [k: number]: React.CSSProperties } = {
   0: {
     left: "calc(100% - 20px)",
-    top: 0,
+    top: 5,
   },
   1: {
     left: "calc(100% - 20px)",
-    top: "calc(max(12.5vh, 85px) - 39px)",
+    top: "calc(max(12.5vh, 85px) + 24px - 15px)",
   },
   2: {
     left: "calc(100% - 20px)",
-    top: "calc(max(25vh, 170px) - 69px)",
+    top: "calc(max(25vh, 170px) + 24px - 10px)",
   },
   3: {
     left: "calc(50% - 15px)",
-    top: "calc(max(25vh, 170px) - 64px)",
+    top: "calc(max(25vh, 170px) + 24px + 5px)",
   },
   4: {
     left: -10,
-    top: "calc(max(25vh, 170px) - 69px)",
+    top: "calc(max(25vh, 170px) + 24px - 10px)",
   },
   5: {
     left: -10,
-    top: "calc(max(12.5vh, 85px) - 39px)",
+    top: "calc(max(12.5vh, 85px) + 24px - 15px)",
   },
   6: {
     left: -10,
-    top: 0,
+    top: 5,
   },
   7: {
     left: "calc(50% - 15px)",

@@ -12,6 +12,7 @@ import Backend from "react-dnd-html5-backend";
 import { AdjustScore } from "./components/AdjustScore";
 import { useGame, CardIndex } from "./hooks/use-game";
 import { Bag } from "./components/Bag";
+import { BaseCard } from "./components/BaseCard";
 
 const Game = () => {
   const { search } = useLocation();
@@ -54,26 +55,27 @@ const Game = () => {
         <Grid container direction="column" alignItems="center">
           <Grid item>Player tiles</Grid>
           <Grid container item justify="center">
-            <Card card={deck[0]} />
+            <BaseCard card={deck[0]} />
             <Hours {...score} allowsDrop onClick={beginAdjustScore} />
             {cardsIndices.map((i) => (
               <Card
                 key={i}
+                index={i}
                 card={cards[i]}
                 allowsDrop
                 onClick={confirmFade(i)}
-                onDropFate={(f) => playFate(playerId, i, f)}
+                onDropFate={(val) => playFate(i, val)}
               />
             ))}
           </Grid>
           <Grid container justify="center">
             {(powers || []).map((power) => (
-              <Card card={power} showPower />
+              <BaseCard card={power} showPower />
             ))}
           </Grid>
           <Grid container item justify="center" alignItems="center">
             {fates.map((f) => (
-              <Fate key={f} num={f as any} />
+              <Fate key={f} num={f as any} source={playerId} />
             ))}
             <Bag onClick={() => drawFate(playerId)} />
           </Grid>

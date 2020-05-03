@@ -20,7 +20,9 @@ const Game = () => {
   const [cardToFade, setCardToFade] = useState<1 | 2 | 3 | 4>();
   const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
   const [playerId] = useState(window.localStorage.getItem("playerId") || "");
-  const { value, updateScore, fadeCard, drawFate, playFate } = useGame(name);
+  const game = useGame(name);
+  const { value, updateScore, fadeCard, drawFate, playFate } = game;
+  const { discardFate } = game;
 
   if (!value) return <CircularProgress />;
 
@@ -77,7 +79,7 @@ const Game = () => {
             {fates.map((f) => (
               <Fate key={f} num={f as any} source={playerId} />
             ))}
-            <Bag onClick={() => drawFate(playerId)} />
+            <Bag onClick={() => drawFate(playerId)} onDropFate={discardFate} />
           </Grid>
           <Grid item>Your tiles</Grid>
         </Grid>

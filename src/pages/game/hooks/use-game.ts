@@ -3,6 +3,7 @@ import { getGame } from "../../../services/firebase";
 import { Card } from "../../../services/game";
 import { FateVal } from "../components/Fate";
 import { DropValue } from "../components/Card";
+import { helpers, random } from "faker";
 
 export function useGame(id: string) {
   const ref = getGame(id);
@@ -54,11 +55,30 @@ export function useGame(id: string) {
     });
   };
 
+  const discardFate = ({ value: fate, source }: DropValue) => {
+    if (!value) return;
+
+    if (typeof source === "string") {
+      const current = value.players[source];
+      current.fates = current.fates || [];
+      current.fates.splice(current.fates.indexOf(fate), 1);
+      value.players[source] = current;
+    } else {
+      value.cards[source].removeFate(fate);
+    }
+
+    ref.update({
+      fates: (value.fates || []).concat(fate),
+      cards: value.cards,
+      players: value.players,
+    });
+  };
+
   const drawFate = (playerId: string) => {
     if (!value || !playerId) return;
     const current = value.players[playerId];
     current.fates = current.fates || [];
-    value.fates = value.fates || [];
+    value.fates = helpers.shuffle(value.fates || []);
 
     if (value.fates?.length === 0) {
       alert("Bag is empty");
@@ -69,7 +89,7 @@ export function useGame(id: string) {
       return;
     }
 
-    const drawn = value.fates.shift();
+    const drawn = value.fates.pop();
     ref.update({
       fates: value.fates,
       players: {
@@ -88,6 +108,7 @@ export function useGame(id: string) {
     fadeCard,
     drawFate,
     playFate,
+    discardFate,
   };
 }
 

@@ -5,6 +5,8 @@ import SwipeableViews from "react-swipeable-views";
 import { createGame, joinGame, gameExists } from "../../services/firebase";
 import EnterName from "./enter-name";
 import { useHistory } from "react-router-dom";
+import qs from "qs";
+import { useLocation } from "react-router-dom";
 
 enum Steps {
   GameName = 1,
@@ -12,6 +14,8 @@ enum Steps {
 }
 
 const JoinGame: FC = () => {
+  const { search } = useLocation();
+  const { player } = qs.parse(search, { ignoreQueryPrefix: true });
   const router = useHistory();
   const [slide, setSlide] = useState(0);
   const [type, setType] = useState<ConnectType>();
@@ -36,7 +40,9 @@ const JoinGame: FC = () => {
   const prompt = isCreate(type) ? "Create Game" : "Join Game";
 
   const onSubmit = (name: string) => {
-    const game = isCreate(type) ? createGame(name) : joinGame(gameId, name);
+    const game = isCreate(type)
+      ? createGame(name)
+      : joinGame(gameId, name, "red", player);
 
     router.push(`/game?name=${game.name}`);
   };

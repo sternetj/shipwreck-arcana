@@ -8,6 +8,7 @@ import {
   names,
 } from "unique-names-generator";
 import { cards } from "./game/cards";
+import { TokenColor } from "../pages/game/components/token";
 
 const playerId = window.localStorage.getItem("playerId") || uuid();
 window.localStorage.setItem("playerId", playerId);
@@ -35,7 +36,7 @@ const uniqueName = () =>
     length: 2,
   });
 
-export const createGame = (playerName: string) => {
+export const createGame = (playerName: string, color: TokenColor = "red") => {
   const name = uniqueName();
   const ref = databaseRef.child(name);
   const deck = helpers.shuffle(cards);
@@ -56,7 +57,9 @@ export const createGame = (playerName: string) => {
     players: {
       [playerId]: {
         playerName,
+        color,
         fates: [],
+        tokens: [false, false, false, false, false, false, false],
       },
     },
     fates: helpers.shuffle(fates),
@@ -79,12 +82,19 @@ export const gameExists = async (gameId: string) => {
   });
 };
 
-export const joinGame = (gameId: string, playerName: string) => {
+export const joinGame = (
+  gameId: string,
+  playerName: string,
+  color: TokenColor = "blue",
+  player?: string,
+) => {
   const ref = db.ref(`${gameId}/players`);
   ref.update({
-    [playerId]: {
+    [player || playerId]: {
       playerName,
       fates: [],
+      color,
+      tokens: [false, false, false, false, false, false, false],
     },
   });
 

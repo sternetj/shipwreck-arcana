@@ -16,10 +16,11 @@ export const Bag: FC<Props> = ({ onClick, onDropFate }) => {
     }),
   });
 
-  let styles: React.CSSProperties = {};
+  let styles = {};
   if (isOver) {
     styles = {
-      boxShadow: "0px 0px 6px 6px lightskyblue",
+      filter: "drop-shadow(0px 0px 6px lightskyblue)",
+      " -webkit-filter": "drop-shadow(0px 0px 6px lightskyblue)",
     };
   }
 
@@ -27,7 +28,7 @@ export const Bag: FC<Props> = ({ onClick, onDropFate }) => {
     <img
       ref={drop}
       onClick={() => onClick()}
-      src="pieces/bag.png"
+      src={`pieces/bag.png`}
       style={styles}
       alt="draw-bag"
     />

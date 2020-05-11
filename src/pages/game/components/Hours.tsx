@@ -26,17 +26,17 @@ const Container = styled(Grid)({
 
 const Token = styled("div")({
   position: "absolute",
-  width: 30,
-  height: 30,
+  width: 27,
+  height: 27,
   clipPath: "circle(49% at center);",
 });
 
 const Doom = styled(Token)({
-  backgroundColor: "#cd3133",
+  background: "url('pieces/doom.png') -2px -2px",
 });
 
 const Points = styled(Token)({
-  backgroundColor: "#2d9966",
+  background: "url('pieces/points.png') -2px -2px",
 });
 
 const scoreToPos: { [k: number]: React.CSSProperties } = {

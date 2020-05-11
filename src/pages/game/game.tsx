@@ -6,29 +6,36 @@ import { Grid, CircularProgress } from "@material-ui/core";
 import { Card } from "./components/Card";
 import { ConfirmFade } from "./components/ConfirmFade";
 import { Hours } from "./components/Hours";
-import { Fate } from "./components/Fate";
+import { Fate, FateVal } from "./components/Fate";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import { AdjustScore } from "./components/AdjustScore";
 import { useGame, CardIndex } from "./hooks/use-game";
 import { Bag } from "./components/Bag";
 import { BaseCard } from "./components/BaseCard";
+import { Token } from "./components/token";
 
 const Game = () => {
   const { search } = useLocation();
-  const { name } = qs.parse(search, { ignoreQueryPrefix: true });
+  const { name, player } = qs.parse(search, { ignoreQueryPrefix: true });
   const [cardToFade, setCardToFade] = useState<1 | 2 | 3 | 4>();
   const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
-  const [playerId] = useState(window.localStorage.getItem("playerId") || "");
+  const [playerId] = useState(
+    player || window.localStorage.getItem("playerId") || "",
+  );
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate } = game;
-  const { discardFate } = game;
+  const { discardFate, flipToken } = game;
 
   if (!value) return <CircularProgress />;
+  console.log(value);
 
   const { points, doom, deck, cards, powers, players } = value;
-  const { fates = [] } = players[playerId];
+  const { fates = [], tokens } = players[playerId] || {};
   const score = { points, doom };
+  const otherTokens = Object.entries(players)
+    .filter(([k]) => k !== playerId)
+    .map(([, { tokens }]) => tokens);
 
   const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
     setCardToFade(slot);
@@ -55,7 +62,20 @@ const Game = () => {
     <>
       <DndProvider backend={Backend}>
         <Grid container direction="column" alignItems="center">
-          <Grid item>Player tiles</Grid>
+          <Grid item container justify="center">
+            {otherTokens.map((ots) => (
+              <Grid item container justify="center" xs={12} md={4} sm={6}>
+                {tokenVals.map((f) => (
+                  <Token
+                    key={f}
+                    num={f as any}
+                    color={"green"}
+                    flipped={ots[f - 1]}
+                  />
+                ))}
+              </Grid>
+            ))}
+          </Grid>
           <Grid container item justify="center">
             <BaseCard card={deck[0]} />
             <Hours {...score} allowsDrop onClick={beginAdjustScore} />
@@ -81,7 +101,17 @@ const Game = () => {
             ))}
             <Bag onClick={() => drawFate(playerId)} onDropFate={discardFate} />
           </Grid>
-          <Grid item>Your tiles</Grid>
+          <Grid container item justify="center" alignItems="center">
+            {tokenVals.map((f) => (
+              <Token
+                key={f}
+                num={f as any}
+                color={"red"}
+                flipped={tokens[f - 1]}
+                onClick={() => flipToken(playerId, f, !tokens[f - 1])}
+              />
+            ))}
+          </Grid>
         </Grid>
       </DndProvider>
 
@@ -102,5 +132,6 @@ const Game = () => {
 };
 
 const cardsIndices: CardIndex[] = [1, 2, 3, 4];
+const tokenVals: FateVal[] = [1, 2, 3, 4, 5, 6, 7];
 
 export default Game;

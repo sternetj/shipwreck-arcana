@@ -40,7 +40,7 @@ export const Token: FC<Props> = (props) => {
   );
 };
 
-export type TokenColor = "red" | "blue" | "gray" | "green" | "yellow";
+export type TokenColor = "green" | "red" | "blue" | "gray" | "yellow";
 
 const TileContainer = styled("div")({
   border: "1px solid rgba(0,0,0,0)",

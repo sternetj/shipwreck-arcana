@@ -11,10 +11,18 @@ type Props = Omit<CardProps, "card" | "index"> & {
 };
 
 export const Hours: FC<Props> = ({ doom, points, ...rest }) => {
+  const same = doom === points;
   return (
     <Container>
       <Card {...rest} index="hours" card={theHours} />
-      <Doom style={scoreToPos[doom]} />
+      <Doom
+        style={{
+          ...scoreToPos[doom],
+          transform: same
+            ? `translateY(${doom === 7 ? "-" : ""}35px)`
+            : undefined,
+        }}
+      />
       <Points style={scoreToPos[points]} />
     </Container>
   );

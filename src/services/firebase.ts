@@ -36,7 +36,11 @@ const uniqueName = () =>
     length: 2,
   });
 
-export const createGame = (playerName: string, color: TokenColor = "red") => {
+export const createGame = (
+  playerName: string,
+  player?: string,
+  color: TokenColor = "green",
+) => {
   const name = uniqueName();
   const ref = databaseRef.child(name);
   const deck = helpers.shuffle(cards);
@@ -49,17 +53,17 @@ export const createGame = (playerName: string, color: TokenColor = "red") => {
 
   ref.set({
     started: false,
-    creator: playerId,
+    creator: player || playerId,
     powers: [],
     deck,
     discard: [],
     cards: activeCards,
     players: {
-      [playerId]: {
+      [`${player || playerId}`]: {
         playerName,
         color,
         fates: [],
-        tokens: [false, false, false, false, false, false, false],
+        tokens: defaultTokens,
       },
     },
     fates: helpers.shuffle(fates),
@@ -77,7 +81,7 @@ export const gameExists = async (gameId: string) => {
   return new Promise((resolve) => {
     const ref = db.ref(gameId);
     ref.once("value", function (snapshot) {
-      resolve(snapshot.exists());
+      resolve(snapshot.val());
     });
   });
 };
@@ -85,23 +89,27 @@ export const gameExists = async (gameId: string) => {
 export const joinGame = (
   gameId: string,
   playerName: string,
-  color: TokenColor = "blue",
   player?: string,
 ) => {
-  const ref = db.ref(`${gameId}/players`);
-  ref.update({
-    [player || playerId]: {
-      playerName,
-      fates: [],
-      color,
-      tokens: [false, false, false, false, false, false, false],
-    },
-  });
+  return new Promise((resolve) => {
+    const ref = db.ref(`${gameId}/players`);
+    ref.once("value", function (snapshot) {
+      const colorIndex = Object.keys(snapshot.val()).length;
+      ref.update({
+        [player || playerId]: {
+          playerName,
+          fates: [],
+          color: opponentColors[colorIndex],
+          tokens: defaultTokens,
+        },
+      });
+    });
 
-  return {
-    name: gameId,
-    ref,
-  };
+    resolve({
+      name: gameId,
+      ref,
+    });
+  });
 };
 
 export const getGame = (gameId: string) => {
@@ -111,3 +119,13 @@ export const getGame = (gameId: string) => {
 };
 
 const fates = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7];
+const opponentColors: TokenColor[] = ["red", "blue", "gray", "yellow"];
+const defaultTokens = {
+  1: false,
+  2: false,
+  3: false,
+  4: false,
+  5: false,
+  6: false,
+  7: false,
+};

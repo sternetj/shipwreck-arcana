@@ -3,12 +3,13 @@ import { getGame } from "../../../services/firebase";
 import { Card } from "../../../services/game";
 import { FateVal } from "../components/Fate";
 import { DropValue } from "../components/Card";
-import { helpers, random } from "faker";
+import { helpers } from "faker";
 import { TokenColor } from "../components/token";
 
 export function useGame(id: string) {
   const ref = getGame(id);
   const [raw] = useObjectVal<GameState>(ref);
+  console.log(raw);
   const value = deserializeGame(raw);
 
   const updateScore = (points: Score) => ref.update(points);

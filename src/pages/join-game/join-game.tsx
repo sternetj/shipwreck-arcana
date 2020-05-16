@@ -4,6 +4,7 @@ import Welcome from "./welcome";
 import SwipeableViews from "react-swipeable-views";
 import { createGame, joinGame, gameExists } from "../../services/firebase";
 import EnterName from "./enter-name";
+import EnterGameId from "./enter-name";
 import { useHistory } from "react-router-dom";
 import qs from "qs";
 import { useLocation } from "react-router-dom";
@@ -39,12 +40,17 @@ const JoinGame: FC = () => {
 
   const prompt = isCreate(type) ? "Create Game" : "Join Game";
 
-  const onSubmit = (name: string) => {
-    const game = isCreate(type)
-      ? createGame(name)
-      : joinGame(gameId, name, "red", player);
+  const onSubmit = async (name: string) => {
+    const game: any = isCreate(type)
+      ? createGame(name, player)
+      : await joinGame(gameId, name, player);
 
-    router.push(`/game?name=${game.name}`);
+    router.push(
+      `/game?${qs.stringify({
+        player,
+        name: game.name,
+      })}`,
+    );
   };
 
   return (
@@ -56,7 +62,7 @@ const JoinGame: FC = () => {
               onJoin={() => onConnect("join")}
               onCreate={() => onConnect("create")}
             />
-            <EnterName
+            <EnterGameId
               title="Enter Game Id"
               placeholder="trusty-iguana"
               label="Continue"

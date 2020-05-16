@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import qs from "qs";
 import { useLocation } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
-import { Grid, CircularProgress } from "@material-ui/core";
+import { Grid, CircularProgress, Typography } from "@material-ui/core";
 import { Card } from "./components/Card";
 import { ConfirmFade } from "./components/ConfirmFade";
 import { Hours } from "./components/Hours";
@@ -31,11 +31,15 @@ const Game = () => {
   console.log(value);
 
   const { points, doom, deck, cards, powers, players } = value;
-  const { fates = [], tokens } = players[playerId] || {};
+  console.log(player);
+  console.log(playerId);
+  console.log(players);
+  const { fates = [], tokens = [], playerName, color } =
+    players[playerId] || {};
   const score = { points, doom };
   const otherTokens = Object.entries(players)
     .filter(([k]) => k !== playerId)
-    .map(([, { tokens }]) => tokens);
+    .map(([_, v]) => v);
 
   const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
     setCardToFade(slot);
@@ -63,16 +67,17 @@ const Game = () => {
       <DndProvider backend={Backend}>
         <Grid container direction="column" alignItems="center">
           <Grid item container justify="center">
-            {otherTokens.map((ots) => (
+            {otherTokens.map(({ tokens: ots, playerName, color }) => (
               <Grid item container justify="center" xs={12} md={4} sm={6}>
                 {tokenVals.map((f) => (
                   <Token
                     key={f}
                     num={f as any}
-                    color={"green"}
-                    flipped={ots[f - 1]}
+                    color={color}
+                    flipped={ots[f]}
                   />
                 ))}
+                <Typography>{playerName}</Typography>
               </Grid>
             ))}
           </Grid>
@@ -106,11 +111,12 @@ const Game = () => {
               <Token
                 key={f}
                 num={f as any}
-                color={"red"}
+                color={color}
                 flipped={tokens[f]}
                 onClick={() => flipToken(playerId, f, !tokens[f])}
               />
             ))}
+            <Typography>{playerName}</Typography>
           </Grid>
         </Grid>
       </DndProvider>

@@ -107,8 +107,8 @@ const Game = () => {
                 key={f}
                 num={f as any}
                 color={"red"}
-                flipped={tokens[f - 1]}
-                onClick={() => flipToken(playerId, f, !tokens[f - 1])}
+                flipped={tokens[f]}
+                onClick={() => flipToken(playerId, f, !tokens[f])}
               />
             ))}
           </Grid>

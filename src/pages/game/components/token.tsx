@@ -44,7 +44,6 @@ export type TokenColor = "green" | "red" | "blue" | "gray" | "yellow";
 
 const TileContainer = styled("div")({
   border: "1px solid rgba(0,0,0,0)",
-  // width: 35,
 });
 
 const Tile = styled("div")({

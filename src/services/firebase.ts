@@ -91,25 +91,31 @@ export const joinGame = (
   playerName: string,
   player?: string,
 ) => {
-  return new Promise((resolve) => {
-    const ref = db.ref(`${gameId}/players`);
-    ref.once("value", function (snapshot) {
-      const colorIndex = Object.keys(snapshot.val()).length;
-      ref.update({
-        [player || playerId]: {
-          playerName,
-          fates: [],
-          color: opponentColors[colorIndex],
-          tokens: defaultTokens,
-        },
-      });
-    });
+  return new Promise<{ name: string; ref: firebase.database.Reference }>(
+    (resolve, reject) => {
+      const ref = db.ref(`${gameId}/players`);
+      ref.once("value", function (snapshot) {
+        const colorIndex = Object.keys(snapshot.val()).length - 1;
+        if (colorIndex >= opponentColors.length) {
+          return reject("Game is full");
+        }
 
-    resolve({
-      name: gameId,
-      ref,
-    });
-  });
+        ref.update({
+          [player || playerId]: {
+            playerName,
+            fates: [],
+            color: opponentColors[colorIndex],
+            tokens: defaultTokens,
+          },
+        });
+
+        resolve({
+          name: gameId,
+          ref,
+        });
+      });
+    },
+  );
 };
 
 export const getGame = (gameId: string) => {

@@ -41,16 +41,20 @@ const JoinGame: FC = () => {
   const prompt = isCreate(type) ? "Create Game" : "Join Game";
 
   const onSubmit = async (name: string) => {
-    const game: any = isCreate(type)
-      ? createGame(name, player)
-      : await joinGame(gameId, name, player);
+    try {
+      const game: any = isCreate(type)
+        ? createGame(name, player)
+        : await joinGame(gameId, name, player);
 
-    router.push(
-      `/game?${qs.stringify({
-        player,
-        name: game.name,
-      })}`,
-    );
+      router.push(
+        `/game?${qs.stringify({
+          player,
+          name: game.name,
+        })}`,
+      );
+    } catch {
+      alert("Game is already full. Please Join or Create a different game.");
+    }
   };
 
   return (

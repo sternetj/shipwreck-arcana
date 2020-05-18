@@ -9,31 +9,40 @@ import { BaseCard } from "./BaseCard";
 export interface CardProps {
   index: CardIndex | "hours";
   card: CardClass;
-  allowsDrop?: boolean;
+  acceptsDrop?: ("power" | "fate")[];
   showPower?: boolean;
   onClick?: (card: CardClass) => any;
-  onDropFate?: (val: DropValue) => any;
+  onDropFate?: (val: DropFate) => any;
+  onDropPower?: (val: DropPower) => any;
 }
 
 export const Card: FC<CardProps> = ({
   index,
   card,
-  allowsDrop = false,
+  acceptsDrop = [],
   onClick,
   showPower = false,
   onDropFate,
+  onDropPower,
 }) => {
-  const [{ isOver }, drop] = useDrop({
-    accept: "fate",
-    canDrop: () => allowsDrop,
-    drop: (item) => onDropFate && onDropFate(item as DropValue),
+  const [{ canDrop }, drop] = useDrop({
+    accept: ["fate", "power"],
+    canDrop: (item: DropFate | DropPower) => acceptsDrop.includes(item.type),
+    drop: (item: DropFate | DropPower) => {
+      if (item.type === "fate") {
+        onDropFate && onDropFate(item as DropFate);
+      }
+      if (item.type === "power") {
+        onDropPower && onDropPower(item as DropPower);
+      }
+    },
     collect: (monitor) => ({
-      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop() && monitor.isOver(),
     }),
   });
 
   let styles: React.CSSProperties = {};
-  if (allowsDrop && isOver) {
+  if (canDrop) {
     styles = {
       boxShadow: "0px 0px 6px 6px lightskyblue",
     };
@@ -60,10 +69,15 @@ export const Card: FC<CardProps> = ({
   );
 };
 
-export interface DropValue {
+export interface DropFate {
   type: "fate";
   value: FateVal;
   source: CardIndex | "hours" | string;
+}
+
+export interface DropPower {
+  type: "power";
+  value: CardClass;
 }
 
 const FateRow = styled(Grid)({

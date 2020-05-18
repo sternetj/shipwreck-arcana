@@ -2,7 +2,7 @@ import { useObjectVal } from "react-firebase-hooks/database";
 import { getGame } from "../../../services/firebase";
 import { Card } from "../../../services/game";
 import { FateVal } from "../components/Fate";
-import { DropValue } from "../components/Card";
+import { DropFate, DropPower } from "../components/Card";
 import { helpers } from "faker";
 import { TokenColor } from "../components/token";
 
@@ -20,6 +20,8 @@ export function useGame(id: string) {
     const cardToFade = value.cards[index];
     const discardFates = cardToFade.fates;
     cardToFade.fates = [];
+    value.discard = (value.discard || []).concat(cardToFade.attachedPowers);
+    cardToFade.attachedPowers = [];
 
     if (value.deck.length === 0) {
       value.deck = helpers.shuffle(value.discard);
@@ -40,7 +42,7 @@ export function useGame(id: string) {
 
   const playFate = (
     index: CardIndex | "hours",
-    { value: fate, source }: DropValue,
+    { value: fate, source }: DropFate,
   ) => {
     if (!value) return;
     let playedOnHours: FateVal | null = null;
@@ -73,7 +75,7 @@ export function useGame(id: string) {
     });
   };
 
-  const discardFate = ({ value: fate, source }: DropValue) => {
+  const discardFate = ({ value: fate, source }: DropFate) => {
     if (!value) return;
 
     if (typeof source === "string") {
@@ -159,6 +161,22 @@ export function useGame(id: string) {
     });
   };
 
+  const attachPower = (index: CardIndex, { value: power }: DropPower) => {
+    if (!value) return;
+
+    const cardToUpdate = value.cards[index];
+    cardToUpdate.addPower(power);
+
+    ref.update({
+      cards: {
+        ...value.cards,
+        [index]: cardToUpdate,
+      },
+    });
+
+    playPower(power);
+  };
+
   return {
     value,
     updateScore,
@@ -168,6 +186,7 @@ export function useGame(id: string) {
     discardFate,
     flipToken,
     playPower,
+    attachPower,
   };
 }
 

@@ -5,6 +5,7 @@ export class Card {
     public name: CardName,
     public power?: FadePower,
     public fates: FateVal[] = [],
+    public attachedPowers: Card[] = [],
   ) {}
 
   get cardPath() {
@@ -23,9 +24,20 @@ export class Card {
     this.fates.splice(index, 1);
   }
 
+  addPower(power: Card) {
+    if (!power.canAttach) return;
+
+    this.attachedPowers.push(power);
+  }
+
+  get canAttach() {
+    return this.power === "slow" || this.power === "amplify";
+  }
+
   static from<T extends Card>(v: T) {
-    const { name, power, fates } = v || {};
-    return new Card(name, power, fates);
+    const { name, power, fates, attachedPowers = [] } = v || {};
+    const powers: any = attachedPowers.map((p) => Card.from(p));
+    return new Card(name, power, fates, powers);
   }
 }
 

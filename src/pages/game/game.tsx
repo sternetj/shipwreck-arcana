@@ -26,7 +26,7 @@ const Game = () => {
   );
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
-  const { discardFate, flipToken } = game;
+  const { discardFate, flipToken, attachPower } = game;
 
   if (!value) return <CircularProgress />;
   console.log(value);
@@ -79,7 +79,7 @@ const Game = () => {
             {deck.length > 0 && <BaseCard card={deck[0]} />}
             <Hours
               {...score}
-              allowsDrop
+              acceptsDrop={["fate"]}
               playedOnHours={playedOnHours}
               onDropFate={(val) => playFate("hours", val)}
               onClick={beginAdjustScore}
@@ -89,9 +89,10 @@ const Game = () => {
                 key={i}
                 index={i}
                 card={cards[i]}
-                allowsDrop
+                acceptsDrop={["fate", "power"]}
                 onClick={confirmFade(i)}
                 onDropFate={(val) => playFate(i, val)}
+                onDropPower={(val) => attachPower(i, val)}
               />
             ))}
           </Grid>

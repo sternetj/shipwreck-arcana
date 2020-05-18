@@ -1,6 +1,8 @@
 import React, { ComponentType, useState } from "react";
 import { Card as CardClass } from "../../../services/game";
 import { styled, Grid, Dialog } from "@material-ui/core";
+import { useDrag } from "react-dnd";
+import { PowerAdornment } from "./PowerAdornment";
 
 export interface BaseCardProps {
   card: CardClass;
@@ -12,9 +14,18 @@ export const BaseCard = React.forwardRef<
   BaseCardProps & ExtractProps<typeof Img>
 >(({ children, card, showPower, ...rest }, ref) => {
   const [preview, setPreview] = useState(false);
+  const [, drag] = useDrag({
+    item: { type: "power", value: card },
+    canDrag: card.canAttach && showPower,
+  });
 
   return (
-    <Grid direction="column">
+    <Grid direction="column" innerRef={drag} style={{ position: "relative" }}>
+      <Adornments container direction="row" justify="flex-end">
+        {card.attachedPowers.map((p) => (
+          <PowerAdornment card={p} />
+        ))}
+      </Adornments>
       <Img
         ref={ref}
         src={showPower ? card.powerPath : card.cardPath}
@@ -43,4 +54,10 @@ const Img = styled("img")({
   height: "25vh",
   margin: "24px",
   marginBottom: 0,
+});
+
+const Adornments = styled(Grid)({
+  position: "absolute",
+  right: 36,
+  top: -1,
 });

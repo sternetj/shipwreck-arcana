@@ -24,7 +24,11 @@ export const ConfirmFade: FC<Props> = (props) => {
         <Button variant="outlined" color="secondary" onClick={() => onCancel()}>
           No
         </Button>
-        <Button variant="contained" color="primary" onClick={() => onConfirm()}>
+        <Button
+          variant="contained"
+          color="primary"
+          autoFocus
+          onClick={() => onConfirm()}>
           Yes
         </Button>
       </DialogActions>

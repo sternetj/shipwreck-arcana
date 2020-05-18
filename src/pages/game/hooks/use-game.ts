@@ -13,12 +13,24 @@ export function useGame(id: string) {
   const value = deserializeGame(raw);
 
   const updateScore = (points: Score) => ref.update(points);
+
   const fadeCard = (index: CardIndex) => {
     if (!value) return;
     const newCard = value.deck.shift();
+    const cardToFade = value.cards[index];
+    const discardFates = cardToFade.fates;
+    cardToFade.fates = [];
+
+    if (value.deck.length === 0) {
+      value.deck = helpers.shuffle(value.discard);
+      value.discard = [];
+    }
+
     ref.update({
+      discard: value.discard,
       deck: value.deck,
-      powers: (value.powers || []).concat(value.cards[index]),
+      powers: (value.powers || []).concat(cardToFade),
+      fates: (value.fates || []).concat(discardFates),
       cards: {
         ...value.cards,
         [index]: newCard,
@@ -26,15 +38,19 @@ export function useGame(id: string) {
     });
   };
 
-  const playFate = (index: CardIndex, { value: fate, source }: DropValue) => {
+  const playFate = (
+    index: CardIndex | "hours",
+    { value: fate, source }: DropValue,
+  ) => {
     if (!value) return;
-    const cardToUpdate = value.cards[index];
-    let playedOnHours = false;
+    let playedOnHours: FateVal | null = null;
 
-    if (source === "hours") {
-      source = 1;
-      playedOnHours = true;
+    if (index === "hours") {
+      index = 1;
+      playedOnHours = fate;
     }
+
+    const cardToUpdate = value.cards[index];
 
     if (typeof source === "string") {
       const current = value.players[source];
@@ -121,6 +137,28 @@ export function useGame(id: string) {
     });
   };
 
+  const playPower = (power: Card) => {
+    if (!value) return;
+
+    value.discard = (value.discard || []).concat(power);
+    value.powers = value.powers || [];
+    const index = value.powers.findIndex((c) => c.name === power.name);
+    if (index >= 0) {
+      value.powers.splice(index, 1);
+    }
+
+    if ((value.deck || []).length === 0) {
+      value.deck = helpers.shuffle(value.discard);
+      value.discard = [];
+    }
+
+    ref.update({
+      discard: value.discard,
+      deck: value.deck,
+      powers: value.powers,
+    });
+  };
+
   return {
     value,
     updateScore,
@@ -129,12 +167,13 @@ export function useGame(id: string) {
     playFate,
     discardFate,
     flipToken,
+    playPower,
   };
 }
 
 const deserializeGame = (value: GameState | undefined) =>
   value && {
-    discard: [],
+    discard: (value.discard || []).map((c) => Card.from(c)),
     ...value,
     deck: (value.deck || []).map((c) => Card.from(c)),
     powers: (value.powers || []).map((c) => Card.from(c)),
@@ -153,6 +192,7 @@ interface GameState {
   deck: Card[];
   discard: Card[];
   fates: FateVal[];
+  playedOnHours?: FateVal;
   players: {
     [playerId: string]: {
       playerName: string;

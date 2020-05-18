@@ -45,7 +45,12 @@ export const Card: FC<CardProps> = ({
       showPower={showPower}
       ref={drop}
       style={styles}
-      onClick={() => onClick && onClick(card)}>
+      onContextMenu={(e) => {
+        if (onClick) {
+          onClick(card);
+          e.preventDefault();
+        }
+      }}>
       <FateRow container justify="center">
         {card.fates.map((f, k) => (
           <Fate key={k} num={f as any} source={index} />

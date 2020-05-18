@@ -1,6 +1,6 @@
-import React, { FC, ComponentType } from "react";
+import React, { ComponentType, useState } from "react";
 import { Card as CardClass } from "../../../services/game";
-import { styled, Grid } from "@material-ui/core";
+import { styled, Grid, Dialog } from "@material-ui/core";
 
 export interface BaseCardProps {
   card: CardClass;
@@ -11,15 +11,26 @@ export const BaseCard = React.forwardRef<
   any,
   BaseCardProps & ExtractProps<typeof Img>
 >(({ children, card, showPower, ...rest }, ref) => {
+  const [preview, setPreview] = useState(false);
+
   return (
-    <Grid direction="column" style={{ marginBottom: 19 }}>
+    <Grid direction="column">
       <Img
         ref={ref}
         src={showPower ? card.powerPath : card.cardPath}
         alt={showPower ? card.power : card.name}
+        onClick={() => setPreview(true)}
         {...rest}
       />
       {children}
+      <Dialog open={preview} onClose={() => setPreview(false)}>
+        <img
+          onClick={() => setPreview(false)}
+          style={{ height: "75vh" }}
+          src={showPower ? card.powerPath : card.cardPath}
+          alt={showPower ? card.power : card.name}
+        />
+      </Dialog>
     </Grid>
   );
 });
@@ -33,5 +44,3 @@ const Img = styled("img")({
   margin: "24px",
   marginBottom: 0,
 });
-
-const t = React.forwardRef(() => <div></div>);

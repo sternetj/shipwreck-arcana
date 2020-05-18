@@ -4,14 +4,21 @@ import { useDrag } from "react-dnd";
 import { CardIndex } from "../hooks/use-game";
 interface Props {
   num: FateVal;
-  source: CardIndex | string;
+  source?: CardIndex | string;
+  styles?: React.CSSProperties;
 }
-export const Fate: FC<Props> = ({ num: value, source }) => {
-  const [, drag] = useDrag({ item: { type: "fate", value, source } });
+export const Fate: FC<Props> = ({ num: value, source, styles }) => {
+  const [, drag] = useDrag({
+    item: { type: "fate", value, source },
+    canDrag: !!source,
+  });
   return (
     <Tile
       ref={drag}
-      style={{ background: `url('pieces/fates.png') ${tileToSprite[value]}` }}
+      style={{
+        background: `url('pieces/fates.png') ${tileToSprite[value]}`,
+        ...styles,
+      }}
     />
   );
 };

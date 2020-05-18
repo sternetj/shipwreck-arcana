@@ -2,18 +2,21 @@ import React, { FC } from "react";
 import { Card as CardClass } from "../../../services/game";
 import { Card, CardProps } from "./Card";
 import { Grid, styled } from "@material-ui/core";
+import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
+import { FateVal, Fate } from "./Fate";
 
 const theHours = new CardClass("the-hours");
 
 type Props = Omit<CardProps, "card" | "index"> & {
   doom: number;
   points: number;
+  playedOnHours?: FateVal;
 };
 
-export const Hours: FC<Props> = ({ doom, points, ...rest }) => {
+export const Hours: FC<Props> = ({ doom, points, playedOnHours, ...rest }) => {
   const same = doom === points;
   return (
-    <Container>
+    <Container alignItems="center">
       <Card {...rest} index="hours" card={theHours} />
       <Doom
         style={{
@@ -24,12 +27,19 @@ export const Hours: FC<Props> = ({ doom, points, ...rest }) => {
         }}
       />
       <Points style={scoreToPos[points]} />
+      {!!playedOnHours && (
+        <Grid container justify="flex-end" alignItems="center">
+          <Fate num={playedOnHours} styles={{ opacity: 0.6 }} />
+          <DoubleArrowIcon style={{ opacity: 0.5, color: "#aca02d" }} />
+        </Grid>
+      )}
     </Container>
   );
 };
 
 const Container = styled(Grid)({
   position: "relative",
+  marginBottom: 0,
 });
 
 const Token = styled("div")({

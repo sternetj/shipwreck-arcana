@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import qs from "qs";
 import { useLocation } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
-import { Grid, CircularProgress, Typography } from "@material-ui/core";
+import { Grid, CircularProgress } from "@material-ui/core";
 import { Card } from "./components/Card";
 import { ConfirmFade } from "./components/ConfirmFade";
 import { Hours } from "./components/Hours";
@@ -13,29 +13,27 @@ import { AdjustScore } from "./components/AdjustScore";
 import { useGame, CardIndex } from "./hooks/use-game";
 import { Bag } from "./components/Bag";
 import { BaseCard } from "./components/BaseCard";
-import { Token } from "./components/token";
+import { TokenRow } from "./components/TokenRow";
 
 const Game = () => {
   const { search } = useLocation();
   const { name, player } = qs.parse(search, { ignoreQueryPrefix: true });
   const [cardToFade, setCardToFade] = useState<1 | 2 | 3 | 4>();
+  const [powerToPlay, setPowerToPlay] = useState<CardClass>();
   const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
   const [playerId] = useState(
     player || window.localStorage.getItem("playerId") || "",
   );
   const game = useGame(name);
-  const { value, updateScore, fadeCard, drawFate, playFate } = game;
+  const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
   const { discardFate, flipToken } = game;
 
   if (!value) return <CircularProgress />;
   console.log(value);
 
   const { points, doom, deck, cards, powers, players } = value;
-  console.log(player);
-  console.log(playerId);
-  console.log(players);
-  const { fates = [], tokens = [], playerName, color } =
-    players[playerId] || {};
+  const { playedOnHours } = value;
+  const { fates = [], tokens = [], color } = players[playerId] || {};
   const score = { points, doom };
   const otherTokens = Object.entries(players)
     .filter(([k]) => k !== playerId)
@@ -54,11 +52,17 @@ const Game = () => {
     setAdjustPointsOpen(false);
   };
 
-  const closeConfirm = () => setCardToFade(undefined);
+  const closeConfirmFade = () => setCardToFade(undefined);
+  const closeConfirmPlayPower = () => setPowerToPlay(undefined);
 
   const onFade = () => {
     cardToFade && fadeCard(cardToFade);
-    closeConfirm();
+    closeConfirmFade();
+  };
+
+  const onPlayPower = () => {
+    powerToPlay && playPower(powerToPlay);
+    closeConfirmPlayPower();
   };
 
   console.log(JSON.stringify(value, null, 2));
@@ -66,24 +70,20 @@ const Game = () => {
     <>
       <DndProvider backend={Backend}>
         <Grid container direction="column" alignItems="center">
-          <Grid item container justify="center">
+          <Grid item container justify="center" style={{ padding: "2rem 0" }}>
             {otherTokens.map(({ tokens: ots, playerName, color }) => (
-              <Grid item container justify="center" xs={12} md={4} sm={6}>
-                {tokenVals.map((f) => (
-                  <Token
-                    key={f}
-                    num={f as any}
-                    color={color}
-                    flipped={ots[f]}
-                  />
-                ))}
-                <Typography>{playerName}</Typography>
-              </Grid>
+              <TokenRow color={color} selections={ots} name={playerName} />
             ))}
           </Grid>
           <Grid container item justify="center">
-            <BaseCard card={deck[0]} />
-            <Hours {...score} allowsDrop onClick={beginAdjustScore} />
+            {deck.length > 0 && <BaseCard card={deck[0]} />}
+            <Hours
+              {...score}
+              allowsDrop
+              playedOnHours={playedOnHours}
+              onDropFate={(val) => playFate("hours", val)}
+              onClick={beginAdjustScore}
+            />
             {cardsIndices.map((i) => (
               <Card
                 key={i}
@@ -97,7 +97,14 @@ const Game = () => {
           </Grid>
           <Grid container justify="center">
             {(powers || []).map((power) => (
-              <BaseCard card={power} showPower />
+              <BaseCard
+                card={power}
+                showPower
+                onContextMenu={(e) => {
+                  setPowerToPlay(power);
+                  e.preventDefault();
+                }}
+              />
             ))}
           </Grid>
           <Grid container item justify="center" alignItems="center">
@@ -106,25 +113,28 @@ const Game = () => {
             ))}
             <Bag onClick={() => drawFate(playerId)} onDropFate={discardFate} />
           </Grid>
-          <Grid container item justify="center" alignItems="center">
-            {tokenVals.map((f) => (
-              <Token
-                key={f}
-                num={f as any}
-                color={color}
-                flipped={tokens[f]}
-                onClick={() => flipToken(playerId, f, !tokens[f])}
-              />
-            ))}
-            <Typography>{playerName}</Typography>
+          <Grid container item justify="center" style={{ paddingTop: "2rem" }}>
+            <TokenRow
+              selections={tokens}
+              color={color}
+              onClick={(f: FateVal) => flipToken(playerId, f, !tokens[f])}
+            />
           </Grid>
         </Grid>
       </DndProvider>
 
       <ConfirmFade
+        prompt="Fade this card?"
         open={!!cardToFade}
-        onFade={onFade}
-        onCancel={closeConfirm}
+        onConfirm={onFade}
+        onCancel={closeConfirmFade}
+      />
+
+      <ConfirmFade
+        prompt="Play this Power?"
+        open={!!powerToPlay}
+        onConfirm={onPlayPower}
+        onCancel={closeConfirmPlayPower}
       />
 
       <AdjustScore
@@ -138,6 +148,5 @@ const Game = () => {
 };
 
 const cardsIndices: CardIndex[] = [1, 2, 3, 4];
-const tokenVals: FateVal[] = [1, 2, 3, 4, 5, 6, 7];
 
 export default Game;

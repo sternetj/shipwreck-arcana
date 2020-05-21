@@ -8,16 +8,17 @@ interface Props {
 }
 
 export const Bag: FC<Props> = ({ onClick, onDropFate }) => {
-  const [{ isOver }, drop] = useDrop({
+  const [{ canDrop }, drop] = useDrop({
     accept: "fate",
+    canDrop: (item: DropFate) => typeof item.source === "number",
     drop: (item) => onDropFate(item as DropFate),
     collect: (monitor) => ({
-      isOver: monitor.isOver(),
+      canDrop: monitor.isOver() && monitor.canDrop(),
     }),
   });
 
   let styles = {};
-  if (isOver) {
+  if (canDrop) {
     styles = {
       filter: "drop-shadow(0px 0px 6px lightskyblue)",
       " -webkit-filter": "drop-shadow(0px 0px 6px lightskyblue)",
@@ -29,7 +30,7 @@ export const Bag: FC<Props> = ({ onClick, onDropFate }) => {
       ref={drop}
       onClick={() => onClick()}
       src={`pieces/bag.png`}
-      style={styles}
+      style={{ ...styles, cursor: "pointer" }}
       alt="draw-bag"
     />
   );

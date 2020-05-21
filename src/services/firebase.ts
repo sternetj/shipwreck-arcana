@@ -95,7 +95,7 @@ export const joinGame = (
     (resolve, reject) => {
       const ref = db.ref(`${gameId}/players`);
       ref.once("value", function (snapshot) {
-        const colorIndex = Object.keys(snapshot.val()).length - 1;
+        const colorIndex = Object.keys(snapshot.val()).length;
         if (colorIndex >= opponentColors.length) {
           return reject("Game is full");
         }
@@ -104,7 +104,7 @@ export const joinGame = (
           [player || playerId]: {
             playerName,
             fates: [],
-            color: opponentColors[colorIndex],
+            color: opponentColors[colorIndex % opponentColors.length],
             tokens: defaultTokens,
           },
         });
@@ -125,7 +125,7 @@ export const getGame = (gameId: string) => {
 };
 
 const fates = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7];
-const opponentColors: TokenColor[] = ["red", "blue", "gray", "yellow"];
+const opponentColors: TokenColor[] = ["red", "blue", "gray", "yellow", "green"];
 const defaultTokens = {
   1: false,
   2: false,

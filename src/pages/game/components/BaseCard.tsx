@@ -20,7 +20,7 @@ export const BaseCard = React.forwardRef<
   });
 
   return (
-    <Grid direction="column" innerRef={drag} style={{ position: "relative" }}>
+    <Card direction="column" innerRef={drag} style={{ position: "relative" }}>
       <Adornments container direction="row" justify="flex-end">
         {card.attachedPowers.map((p) => (
           <PowerAdornment card={p} />
@@ -42,7 +42,7 @@ export const BaseCard = React.forwardRef<
           alt={showPower ? card.power : card.name}
         />
       </Dialog>
-    </Grid>
+    </Card>
   );
 });
 
@@ -60,4 +60,9 @@ const Adornments = styled(Grid)({
   position: "absolute",
   right: 36,
   top: -1,
+});
+
+const Card = styled(Grid)({
+  position: "relative",
+  cursor: "pointer",
 });

@@ -13,7 +13,7 @@ interface WelcomeProps {
 }
 
 const CreateGame: FC<WelcomeProps> = (props) => {
-  const { onSubmit, label, title, dataKey, error } = props;
+  const { onSubmit, label, title, dataKey, error, children } = props;
   const { placeholder = "Name", onBack } = props;
   const [name, setName] = useLocalStorage(dataKey, "");
   return (
@@ -29,6 +29,7 @@ const CreateGame: FC<WelcomeProps> = (props) => {
         onKeyPress={(e) => e.key === "Enter" && onSubmit(name)}
         onChange={(e) => setName(e.target.value)}
       />
+      {children}
       <Grid container direction="row" justify="space-evenly">
         <ActionButton onClick={() => onBack()}>Back</ActionButton>
         <ActionButton color="primary" onClick={() => onSubmit(name)}>

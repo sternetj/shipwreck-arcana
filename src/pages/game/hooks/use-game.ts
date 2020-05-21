@@ -177,6 +177,19 @@ export function useGame(id: string) {
     playPower(power);
   };
 
+  const leaveGame = (playerId: string) => {
+    if (!value) return;
+
+    if (Object.keys(value.players).length > 1) {
+      const { [playerId]: leaving, ...remainingPlayers } = value.players;
+      ref.update({
+        players: remainingPlayers,
+      });
+    } else {
+      ref.remove();
+    }
+  };
+
   return {
     value,
     updateScore,
@@ -187,6 +200,7 @@ export function useGame(id: string) {
     flipToken,
     playPower,
     attachPower,
+    leaveGame,
   };
 }
 

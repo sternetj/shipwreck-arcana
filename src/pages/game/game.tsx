@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import qs from "qs";
 import { useLocation } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
@@ -26,7 +26,11 @@ const Game = () => {
   );
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
-  const { discardFate, flipToken, attachPower } = game;
+  const { discardFate, flipToken, attachPower, leaveGame } = game;
+
+  useEffect(() => {
+    window.onbeforeunload = () => leaveGame(playerId);
+  }, [leaveGame, playerId]);
 
   if (!value) return <CircularProgress />;
   console.log(value);
@@ -108,16 +112,22 @@ const Game = () => {
               />
             ))}
           </Grid>
-          <Grid container item justify="center" alignItems="center">
+          <Grid
+            container
+            item
+            justify="center"
+            alignItems="center"
+            style={{ padding: "2rem 0" }}>
             {fates.map((f) => (
               <Fate key={f} num={f as any} source={playerId} />
             ))}
             <Bag onClick={() => drawFate(playerId)} onDropFate={discardFate} />
           </Grid>
-          <Grid container item justify="center" style={{ paddingTop: "2rem" }}>
+          <Grid container item justify="center">
             <TokenRow
               selections={tokens}
               color={color}
+              fullWidth
               onClick={(f: FateVal) => flipToken(playerId, f, !tokens[f])}
             />
           </Grid>

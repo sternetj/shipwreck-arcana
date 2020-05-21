@@ -3,7 +3,12 @@ import { Grid, styled, Card, Typography, FilledInput } from "@material-ui/core";
 import FilterNone from "@material-ui/icons/FilterNone";
 import Welcome from "./welcome";
 import SwipeableViews from "react-swipeable-views";
-import { createGame, joinGame, gameExists } from "../../services/firebase";
+import {
+  createGame,
+  joinGame,
+  gameExists,
+  generateGameName,
+} from "../../services/firebase";
 import EnterName from "./enter-name";
 import EnterGameId from "./enter-name";
 import { useHistory } from "react-router-dom";
@@ -42,7 +47,12 @@ const JoinGame: FC = () => {
   }, []);
 
   const onConnect = (type: ConnectType) => {
-    setSlide(isCreate(type) ? Steps.PlayerName : Steps.GameName);
+    if (isCreate(type)) {
+      setGameId(generateGameName());
+      setSlide(Steps.PlayerName);
+    } else {
+      setSlide(Steps.GameName);
+    }
     setType(type);
   };
 
@@ -61,7 +71,7 @@ const JoinGame: FC = () => {
   const onSubmit = async (name: string) => {
     try {
       const game: any = isCreate(type)
-        ? createGame(name, player)
+        ? createGame(gameId, name, player)
         : await joinGame(gameId, name, player);
 
       router.push(
@@ -113,7 +123,7 @@ const JoinGame: FC = () => {
                     Click this join link to copy it to your clipboard
                   </Typography>
                   <Input
-                    value={`${window.location.origin}/${gameId}`}
+                    value={`${window.location.origin}?name=${gameId}`}
                     readOnly
                     fullWidth
                     inputRef={copyInput}
@@ -140,7 +150,7 @@ const isCreate = (type?: ConnectType) => {
 };
 
 const StyledCard = styled(Card)({
-  width: "360px",
+  width: "390px",
   padding: "2rem",
 });
 

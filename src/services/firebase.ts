@@ -28,7 +28,7 @@ firebase.initializeApp(config);
 const db = firebase.database();
 const databaseRef = db.ref();
 
-const uniqueName = () =>
+export const generateGameName = () =>
   uniqueNamesGenerator({
     dictionaries: [adjectives, [...names, ...animals]],
     separator: "-",
@@ -37,12 +37,12 @@ const uniqueName = () =>
   });
 
 export const createGame = (
+  gameId: string,
   playerName: string,
   player?: string,
   color: TokenColor = "green",
 ) => {
-  const name = uniqueName();
-  const ref = databaseRef.child(name);
+  const ref = databaseRef.child(gameId);
   const deck = helpers.shuffle(cards);
   const activeCards = {
     1: deck.shift(),
@@ -72,7 +72,7 @@ export const createGame = (
   });
 
   return {
-    name,
+    name: gameId,
     ref,
   };
 };

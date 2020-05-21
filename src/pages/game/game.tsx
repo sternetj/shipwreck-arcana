@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import qs from "qs";
 import { useLocation } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
@@ -31,6 +31,11 @@ const Game = () => {
   useEffect(() => {
     window.onbeforeunload = () => leaveGame(playerId);
   }, [leaveGame, playerId]);
+
+  useEffect(() => {
+    return () => leaveGame(playerId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!value) return <CircularProgress />;
   console.log(value);

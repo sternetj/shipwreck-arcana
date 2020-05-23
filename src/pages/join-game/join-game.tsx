@@ -1,6 +1,5 @@
-import React, { useState, FC, useEffect, useRef } from "react";
-import { Grid, styled, Card, Typography, FilledInput } from "@material-ui/core";
-import FilterNone from "@material-ui/icons/FilterNone";
+import React, { useState, FC, useEffect } from "react";
+import { Grid, styled, Card, Typography } from "@material-ui/core";
 import Welcome from "./welcome";
 import SwipeableViews from "react-swipeable-views";
 import {
@@ -14,6 +13,7 @@ import EnterGameId from "./enter-name";
 import { useHistory } from "react-router-dom";
 import qs from "qs";
 import { useLocation } from "react-router-dom";
+import { ShareLink } from "../../components/ShareLink";
 
 enum Steps {
   GameName = 1,
@@ -28,8 +28,7 @@ const JoinGame: FC = () => {
   const [type, setType] = useState<ConnectType>();
   const [directLink, setDirectLink] = useState<boolean>();
   const [gameId, setGameId] = useState(name || "");
-  const [errorText, setErrorText] = useState("");
-  const copyInput = useRef<HTMLInputElement>();
+  const [errorText, setErrorText] = useState<string>();
 
   useEffect(() => {
     if (gameId) {
@@ -57,6 +56,7 @@ const JoinGame: FC = () => {
   };
 
   const onSetGameId = async (id: string) => {
+    setErrorText(undefined);
     const exists = await gameExists(id);
     if (exists) {
       setSlide(Steps.PlayerName);
@@ -103,14 +103,18 @@ const JoinGame: FC = () => {
               onJoin={() => onConnect("join")}
               onCreate={() => onConnect("create")}
             />
-            <EnterGameId
-              title="Enter Game Id"
-              placeholder="trusty-iguana"
-              label="Continue"
-              error={errorText}
-              onBack={() => setSlide(0)}
-              onSubmit={onSetGameId}
-            />
+            {slide === 1 ? (
+              <EnterGameId
+                title="Enter Game Id"
+                placeholder="trusty-iguana"
+                label="Continue"
+                error={errorText}
+                onBack={() => setSlide(0)}
+                onSubmit={onSetGameId}
+              />
+            ) : (
+              <></>
+            )}
             <EnterName
               dataKey="playerName"
               title="Enter Your Name"
@@ -118,23 +122,7 @@ const JoinGame: FC = () => {
               onBack={() => setSlide(0)}
               onSubmit={onSubmit}>
               {isCreate(type) && (
-                <Grid container justify="center" style={{ padding: "1rem 0" }}>
-                  <Typography variant="caption">
-                    Click this join link to copy it to your clipboard
-                  </Typography>
-                  <Input
-                    value={`${window.location.origin}?name=${gameId}`}
-                    readOnly
-                    fullWidth
-                    inputRef={copyInput}
-                    onClick={() => {
-                      copyInput.current?.select();
-                      document.execCommand("copy");
-                      copyInput.current?.setSelectionRange(0, 0);
-                    }}
-                    endAdornment={<FilterNone />}
-                  />
-                </Grid>
+                <ShareLink gameId={gameId} style={{ padding: "1rem 0" }} />
               )}
             </EnterName>
           </SwipeableViews>
@@ -150,7 +138,7 @@ const isCreate = (type?: ConnectType) => {
 };
 
 const StyledCard = styled(Card)({
-  width: "390px",
+  width: "420px",
   padding: "2rem",
 });
 
@@ -165,12 +153,6 @@ const Background = styled(Grid)({
 
 const Highlight = styled("span")({
   color: "#2d9966",
-});
-
-const Input = styled(FilledInput)({
-  "&&& *": {
-    cursor: "pointer",
-  },
 });
 
 export default JoinGame;

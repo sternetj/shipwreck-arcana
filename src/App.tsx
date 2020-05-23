@@ -7,6 +7,9 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core";
 
 const theme = createMuiTheme({
   palette: {
+    secondary: {
+      main: "#2d9966",
+    },
     text: {
       secondary: "#2d9966",
     },
@@ -18,6 +21,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Switch>
+          <Route path="/join" exact children={<JoinGame />} />
           <Route path="/" exact children={<JoinGame />} />
           <Route path="/game" children={<Game />} />
         </Switch>

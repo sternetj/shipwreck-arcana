@@ -9,6 +9,7 @@ import {
   Select,
   MenuItem,
   SelectProps,
+  Grid,
 } from "@material-ui/core";
 
 interface Props {
@@ -32,19 +33,21 @@ export const AdjustScore: FC<Props> = (props) => {
   return (
     <Dialog open={open}>
       <DialogContent style={{ padding: 24, textAlign: "center" }}>
-        <Input
-          label="Points"
-          value={newPoints}
-          onChange={(e) => setPoints(e.target.value as number)}
-        />
-        <Input
-          label="Doom"
-          value={newDoom}
-          onChange={(e) => setDoom(e.target.value as number)}
-        />
+        <Grid container justify="space-around">
+          <Input
+            label="Points"
+            value={newPoints}
+            onChange={(e) => setPoints(e.target.value as number)}
+          />
+          <Input
+            label="Doom"
+            value={newDoom}
+            onChange={(e) => setDoom(e.target.value as number)}
+          />
+        </Grid>
       </DialogContent>
       <DialogActions style={{ paddingLeft: 24, paddingRight: 24 }}>
-        <Button variant="outlined" color="secondary" onClick={() => onCancel()}>
+        <Button variant="outlined" color="inherit" onClick={() => onCancel()}>
           No
         </Button>
         <Button

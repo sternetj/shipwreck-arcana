@@ -21,7 +21,7 @@ export const ConfirmFade: FC<Props> = (props) => {
         {prompt}
       </DialogContent>
       <DialogActions style={{ paddingLeft: 24, paddingRight: 24 }}>
-        <Button variant="outlined" color="secondary" onClick={() => onCancel()}>
+        <Button variant="outlined" color="inherit" onClick={() => onCancel()}>
           No
         </Button>
         <Button

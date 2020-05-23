@@ -167,14 +167,19 @@ export function useGame(id: string) {
     const cardToUpdate = value.cards[index];
     cardToUpdate.addPower(power);
 
+    value.powers = value.powers || [];
+    const powerIndex = value.powers.findIndex((c) => c.name === power.name);
+    if (powerIndex >= 0) {
+      value.powers.splice(powerIndex, 1);
+    }
+
     ref.update({
+      powers: value.powers,
       cards: {
         ...value.cards,
         [index]: cardToUpdate,
       },
     });
-
-    playPower(power);
   };
 
   const leaveGame = (playerId: string) => {

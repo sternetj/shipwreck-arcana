@@ -12,7 +12,7 @@ import {
 
 interface Props {
   gameId: string;
-  style: GridProps["style"];
+  style?: GridProps["style"];
 }
 
 export const ShareLink: FC<Props> = (props) => {

@@ -14,6 +14,7 @@ import { useGame, CardIndex } from "./hooks/use-game";
 import { Bag } from "./components/Bag";
 import { BaseCard } from "./components/BaseCard";
 import { TokenRow } from "./components/TokenRow";
+import { Help } from "./components/Help";
 
 const Game = () => {
   const { search } = useLocation();
@@ -28,17 +29,21 @@ const Game = () => {
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
   const { discardFate, flipToken, attachPower, leaveGame } = game;
 
-  useEffect(() => {
-    window.onbeforeunload = () => leaveGame(playerId);
-  }, [leaveGame, playerId]);
+  // useEffect(() => {
+  //   window.onbeforeunload = () => leaveGame(playerId);
+  // }, [leaveGame, playerId]);
 
   useEffect(() => {
     return () => leaveGame(playerId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!value) return <CircularProgress />;
-  console.log(value);
+  if (!value)
+    return (
+      <Grid container justify="center" style={{ marginTop: "4rem" }}>
+        <CircularProgress color="secondary" size={65} />
+      </Grid>
+    );
 
   const { points, doom, deck, cards, powers, players } = value;
   const { playedOnHours } = value;
@@ -78,6 +83,7 @@ const Game = () => {
   return (
     <>
       <DndProvider backend={Backend}>
+        <Help gameId={name} />
         <Grid container direction="column" alignItems="center">
           <Grid item container justify="center" style={{ padding: "2rem 0" }}>
             {otherTokens.map(({ tokens: ots, playerName, color }) => (

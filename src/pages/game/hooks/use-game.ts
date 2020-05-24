@@ -8,7 +8,7 @@ import { TokenColor } from "../components/token";
 
 export function useGame(id: string) {
   const ref = getGame(id);
-  const [raw] = useObjectVal<GameState>(ref);
+  const [raw, loading] = useObjectVal<GameState>(ref);
   console.log(raw);
   const value = deserializeGame(raw);
 
@@ -196,6 +196,7 @@ export function useGame(id: string) {
   };
 
   return {
+    loading,
     value,
     updateScore,
     fadeCard,

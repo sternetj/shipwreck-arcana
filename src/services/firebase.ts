@@ -125,7 +125,7 @@ export const getGame = (gameId: string) => {
 };
 
 const fates = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7];
-const opponentColors: TokenColor[] = ["red", "blue", "gray", "yellow", "green"];
+const opponentColors: TokenColor[] = ["green", "red", "blue", "gray", "yellow"];
 const defaultTokens = {
   1: false,
   2: false,

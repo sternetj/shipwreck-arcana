@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import qs from "qs";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
 import { Grid, CircularProgress } from "@material-ui/core";
 import { Card } from "./components/Card";
@@ -15,28 +15,45 @@ import { Bag } from "./components/Bag";
 import { BaseCard } from "./components/BaseCard";
 import { TokenRow } from "./components/TokenRow";
 import { Help } from "./components/Help";
+import { NoGame } from "./components/NoGame";
+import { SpectatorModal } from "./components/SpectatorModal";
 
 const Game = () => {
+  const router = useHistory();
   const { search } = useLocation();
   const { name, player } = qs.parse(search, { ignoreQueryPrefix: true });
   const [cardToFade, setCardToFade] = useState<1 | 2 | 3 | 4>();
   const [powerToPlay, setPowerToPlay] = useState<CardClass>();
   const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
+  const [spectatorModalShown, setSpectatorModalShown] = useState<boolean>(
+    false,
+  );
   const [playerId] = useState(
     player || window.localStorage.getItem("playerId") || "",
   );
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
-  const { discardFate, flipToken, attachPower, leaveGame } = game;
+  const { loading, discardFate, flipToken, attachPower, leaveGame } = game;
 
-  // useEffect(() => {
-  //   window.onbeforeunload = () => leaveGame(playerId);
-  // }, [leaveGame, playerId]);
+  useEffect(() => {
+    window.onbeforeunload = () => leaveGame(playerId);
+  }, [leaveGame, playerId]);
 
   useEffect(() => {
     return () => leaveGame(playerId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!loading && !value) {
+    return (
+      <NoGame
+        gameId={name}
+        onContinue={() => {
+          router.push("/");
+        }}
+      />
+    );
+  }
 
   if (!value)
     return (
@@ -47,6 +64,8 @@ const Game = () => {
 
   const { points, doom, deck, cards, powers, players } = value;
   const { playedOnHours } = value;
+  const spectator = !players[playerId];
+  const canJoin = Object.keys(players).length < 5;
   const { fates = [], tokens = [], color } = players[playerId] || {};
   const score = { points, doom };
   const otherTokens = Object.entries(players)
@@ -54,27 +73,45 @@ const Game = () => {
     .map(([_, v]) => v);
 
   const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
+    if (spectator) return;
+
     setCardToFade(slot);
   };
 
   const beginAdjustScore = () => {
+    if (spectator) return;
+
     setAdjustPointsOpen(true);
   };
 
   const adjustScore = (points: number, doom: number) => {
+    if (spectator) return;
+
     updateScore({ points, doom });
     setAdjustPointsOpen(false);
   };
 
-  const closeConfirmFade = () => setCardToFade(undefined);
-  const closeConfirmPlayPower = () => setPowerToPlay(undefined);
+  const closeConfirmFade = () => {
+    if (spectator) return;
+
+    setCardToFade(undefined);
+  };
+  const closeConfirmPlayPower = () => {
+    if (spectator) return;
+
+    setPowerToPlay(undefined);
+  };
 
   const onFade = () => {
+    if (spectator) return;
+
     cardToFade && fadeCard(cardToFade);
     closeConfirmFade();
   };
 
   const onPlayPower = () => {
+    if (spectator) return;
+
     powerToPlay && playPower(powerToPlay);
     closeConfirmPlayPower();
   };
@@ -94,9 +131,9 @@ const Game = () => {
             {deck.length > 0 && <BaseCard card={deck[0]} />}
             <Hours
               {...score}
-              acceptsDrop={["fate"]}
+              acceptsDrop={!spectator ? ["fate"] : []}
               playedOnHours={playedOnHours}
-              onDropFate={(val) => playFate("hours", val)}
+              onDropFate={(val) => !spectator && playFate("hours", val)}
               onClick={beginAdjustScore}
             />
             {cardsIndices.map((i) => (
@@ -104,10 +141,10 @@ const Game = () => {
                 key={i}
                 index={i}
                 card={cards[i]}
-                acceptsDrop={["fate", "power"]}
+                acceptsDrop={!spectator ? ["fate", "power"] : []}
                 onClick={confirmFade(i)}
-                onDropFate={(val) => playFate(i, val)}
-                onDropPower={(val) => attachPower(i, val)}
+                onDropFate={(val) => !spectator && playFate(i, val)}
+                onDropPower={(val) => !spectator && attachPower(i, val)}
               />
             ))}
           </Grid>
@@ -117,6 +154,8 @@ const Game = () => {
                 card={power}
                 showPower
                 onContextMenu={(e) => {
+                  if (spectator) return;
+
                   setPowerToPlay(power);
                   e.preventDefault();
                 }}
@@ -132,14 +171,21 @@ const Game = () => {
             {fates.map((f) => (
               <Fate key={f} num={f as any} source={playerId} />
             ))}
-            <Bag onClick={() => drawFate(playerId)} onDropFate={discardFate} />
+            {!spectator && (
+              <Bag
+                onClick={() => drawFate(playerId)}
+                onDropFate={discardFate}
+              />
+            )}
           </Grid>
           <Grid container item justify="center">
             <TokenRow
               selections={tokens}
               color={color}
               fullWidth
-              onClick={(f: FateVal) => flipToken(playerId, f, !tokens[f])}
+              onClick={(f: FateVal) =>
+                !spectator && flipToken(playerId, f, !tokens[f])
+              }
             />
           </Grid>
         </Grid>
@@ -162,8 +208,20 @@ const Game = () => {
       <AdjustScore
         open={adjustPointsOpen}
         {...score}
-        onCancel={() => setAdjustPointsOpen(false)}
+        onCancel={() => !spectator && setAdjustPointsOpen(false)}
         onUpdate={adjustScore}
+      />
+
+      <SpectatorModal
+        open={spectator && !spectatorModalShown}
+        canJoin={canJoin}
+        onSpectate={() => {
+          setSpectatorModalShown(true);
+        }}
+        onJoinOrLeave={() => {
+          router.push(canJoin ? `/join${search}` : `/`);
+          setSpectatorModalShown(true);
+        }}
       />
     </>
   );

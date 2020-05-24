@@ -8,9 +8,14 @@ import {
   styled,
   Box,
   DialogTitle,
+  Grid,
+  DialogActions,
+  Button,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
 import HelpRounded from "@material-ui/icons/HelpRounded";
+import ExitToApp from "@material-ui/icons/ExitToAppOutlined";
 import { ShareLink } from "../../../components/ShareLink";
 import { Fate } from "./Fate";
 import { Token } from "./token";
@@ -21,17 +26,25 @@ interface Props {
 }
 
 export const Help: FC<Props> = ({ gameId }) => {
+  const router = useHistory();
   const [open, setOpen] = useState(false);
+  const [confirmExitOpen, setConfirmExitOpen] = useState(false);
 
   return (
     <>
-      <IconButton
-        name="help"
-        color="inherit"
-        onClick={() => setOpen(true)}
-        style={{ position: "absolute", right: 0, top: 0 }}>
-        <HelpRounded />
-      </IconButton>
+      <Grid
+        direction="column"
+        style={{ position: "absolute", right: 0, top: 0, display: "flex" }}>
+        <IconButton color="inherit" onClick={() => setOpen(true)} title="Help">
+          <HelpRounded />
+        </IconButton>
+        <IconButton
+          title="Leave Game"
+          color="inherit"
+          onClick={() => setConfirmExitOpen(true)}>
+          <ExitToApp />
+        </IconButton>
+      </Grid>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle style={{ textAlign: "center" }}>How to Play</DialogTitle>
         <DialogContent style={{ padding: "0px 24px 24px 24px" }}>
@@ -60,6 +73,26 @@ export const Help: FC<Props> = ({ gameId }) => {
           </List>
           <ShareLink gameId={gameId} />
         </DialogContent>
+      </Dialog>
+      <Dialog open={confirmExitOpen}>
+        <DialogTitle>Exit Game?</DialogTitle>
+        <DialogContent style={{ padding: "0px 24px 24px 24px" }}>
+          Are you sure you want to leave the game?
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={() => setConfirmExitOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => router.push("/")}>
+            Exit Game
+          </Button>
+        </DialogActions>
       </Dialog>
     </>
   );

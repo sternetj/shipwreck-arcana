@@ -10,8 +10,6 @@ import {
   MenuItem,
   SelectProps,
   Grid,
-  ListItem,
-  List,
 } from "@material-ui/core";
 
 interface Props {

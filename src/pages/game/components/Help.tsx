@@ -12,7 +12,6 @@ import {
   DialogActions,
   Button,
   ListSubheader,
-  Divider,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 

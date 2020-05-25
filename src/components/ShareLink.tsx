@@ -9,6 +9,7 @@ import {
   Popper,
   Fade,
 } from "@material-ui/core";
+import zIndex from "@material-ui/core/styles/zIndex";
 
 interface Props {
   gameId: string;
@@ -45,6 +46,7 @@ export const ShareLink: FC<Props> = (props) => {
       <Popper
         open={open}
         anchorEl={copyInput.current?.parentElement}
+        style={{ zIndex: zIndex.modal }}
         placement="right"
         transition>
         {({ TransitionProps }) => (

@@ -10,6 +10,8 @@ import {
   MenuItem,
   SelectProps,
   Grid,
+  ListItem,
+  List,
 } from "@material-ui/core";
 
 interface Props {
@@ -48,13 +50,13 @@ export const AdjustScore: FC<Props> = (props) => {
       </DialogContent>
       <DialogActions style={{ paddingLeft: 24, paddingRight: 24 }}>
         <Button variant="outlined" color="inherit" onClick={() => onCancel()}>
-          No
+          Cancel
         </Button>
         <Button
           variant="contained"
           color="primary"
           onClick={() => onUpdate(newPoints, newDoom)}>
-          Yes
+          Update
         </Button>
       </DialogActions>
     </Dialog>

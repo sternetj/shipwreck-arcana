@@ -26,6 +26,9 @@ const CreateGame: FC<WelcomeProps> = (props) => {
         variant="outlined"
         placeholder={placeholder}
         value={name}
+        inputProps={{
+          maxLength: 25,
+        }}
         error={!!error || !!requiredError}
         helperText={error || requiredError}
         onKeyPress={(e) => e.key === "Enter" && onSubmit(name)}

@@ -36,7 +36,9 @@ const Game = () => {
   const { loading, discardFate, flipToken, attachPower, leaveGame } = game;
 
   useEffect(() => {
-    window.onbeforeunload = () => leaveGame(playerId);
+    if (process.env.NODE_ENV === "production") {
+      window.onbeforeunload = () => leaveGame(playerId);
+    }
   }, [leaveGame, playerId]);
 
   useEffect(() => {

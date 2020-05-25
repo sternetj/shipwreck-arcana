@@ -52,8 +52,6 @@ export const createGame = (
   };
 
   ref.set({
-    started: false,
-    creator: player || playerId,
     powers: [],
     deck,
     discard: [],

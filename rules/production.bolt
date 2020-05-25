@@ -1,0 +1,130 @@
+path /{gameId} {
+  read() { true }
+}
+
+// All individual Posts are writable by anyone.
+path /{gameId} is Game {
+  validate() { gameId.length <= 31 }
+  write() { true }
+}
+
+type Game {
+  validate() {
+    this.doom >= 0 &&
+    this.doom <= 7 &&
+    this.points >= 0 &&
+    this.points <= 7
+  }
+
+  cards: Map<CardIndex, Card> | Null,
+  deck: Card[] | Null,
+  discard: Card[] | Null,
+  doom: Number,
+  fates: Fate[] | Null,
+  playedOnHours: Fate | Null,
+  players: Map<String, Player>,
+  points: Number,
+  powers: Card[] | Null,
+}
+
+type Card {
+  fates: Fate[] | Null,
+  name: CardName,
+  power: Power,
+  attachedPowers: BaseCard[] | Null,
+}
+
+type BaseCard {
+  name: CardName,
+  power: Power,
+}
+
+type Player {
+  validate() { 
+    this.playerName.length <= 25 &&
+    (
+      this.color == "green" ||
+      this.color == "red" ||
+      this.color == "blue" ||
+      this.color == "gray" ||
+      this.color == "yellow"
+    )
+  }
+
+  color: String,
+  fates: Fate[] | Null,
+  playerName: String,
+  tokens: Boolean[],
+}
+
+type Fate extends Number {
+  validate() { this >= 1 && this <= 7 }
+}
+
+type CardIndex extends String {
+  validate() { this == "1" || this == "2" || this == "3" || this == "4" }
+}
+
+type CardName extends String {
+  validate() {
+    this == "asunder" ||
+    this == "the-engine" ||
+    this == "the-noble" ||
+    this == "dawn" ||
+    this == "the-fall" ||
+    this == "the-north-wind" ||
+    this == "fortune" ||
+    this == "the-feast" ||
+    this == "the-pallbearers" ||
+    this == "iron" ||
+    this == "the-ghost" ||
+    this == "the-passage" ||
+    this == "leviathan" ||
+    this == "the-hours" ||
+    this == "the-prophet" ||
+    this == "midnight" ||
+    this == "the-huntress" ||
+    this == "the-rider" ||
+    this == "the-ash" ||
+    this == "the-imago" ||
+    this == "the-servant" ||
+    this == "the-beast" ||
+    this == "the-judge" ||
+    this == "the-shore" ||
+    this == "the-belltower" ||
+    this == "the-key" ||
+    this == "the-stranger" ||
+    this == "the-blind-man" ||
+    this == "the-lantern" ||
+    this == "the-wish" ||
+    this == "the-captain" ||
+    this == "the-lord" ||
+    this == "the-thief" ||
+    this == "the-chalice" ||
+    this == "the-mirror" ||
+    this == "the-deep" ||
+    this == "the-musicians";
+  }
+}
+
+type Power extends String {
+  validate() { 
+    this == "1-2-3" ||
+    this == "1-4-7" ||
+    this == "3-4-5" ||
+    this == "5-6-7" ||
+    this == "amplify" ||
+    this == "cycle" ||
+    this == "discard-lower" ||
+    this == "exile" ||
+    this == "help" ||
+    this == "higher-than" ||
+    this == "old" ||
+    this == "plus-1" ||
+    this == "relocate" ||
+    this == "same" ||
+    this == "slow" ||
+    this == "twice" ||
+    this == "within-2"
+   }
+}

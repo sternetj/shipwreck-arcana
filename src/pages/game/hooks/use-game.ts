@@ -225,11 +225,12 @@ const deserializeGame = (value: GameState | undefined) =>
   };
 
 interface GameState {
-  points: number;
-  doom: number;
-  powers: Card[];
+  cards: {
+    [index in CardIndex]: Card;
+  };
   deck: Card[];
   discard: Card[];
+  doom: number;
   fates: FateVal[];
   playedOnHours?: FateVal;
   players: {
@@ -240,9 +241,8 @@ interface GameState {
       tokens: boolean[];
     };
   };
-  cards: {
-    [index in CardIndex]: Card;
-  };
+  points: number;
+  powers: Card[];
 }
 
 type Score = Pick<GameState, "points" | "doom">;

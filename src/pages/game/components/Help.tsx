@@ -11,6 +11,8 @@ import {
   Grid,
   DialogActions,
   Button,
+  ListSubheader,
+  Divider,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 
@@ -69,6 +71,23 @@ export const Help: FC<Props> = ({ gameId }) => {
                 <Token num={4} color="blue" />
               </Inline>{" "}
               to flip it over
+            </ListItem>
+            <ListSubheader disableSticky>Difficulty</ListSubheader>
+            <ListItem dense>
+              <Grid container direction="row" justify="space-around">
+                <span>
+                  <b>Zero</b>: Easy
+                </span>
+                <span>
+                  <b>2</b>: Normal
+                </span>
+                <span>
+                  <b>4</b>: Hard
+                </span>
+                <span>
+                  <b>6</b>: Doomed!
+                </span>
+              </Grid>
             </ListItem>
           </List>
           <ShareLink gameId={gameId} />

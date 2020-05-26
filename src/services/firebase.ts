@@ -133,3 +133,5 @@ const defaultTokens = {
   6: false,
   7: false,
 };
+
+export { fates };

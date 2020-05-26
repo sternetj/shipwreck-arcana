@@ -14,7 +14,7 @@ import { useGame, CardIndex } from "./hooks/use-game";
 import { Bag } from "./components/Bag";
 import { BaseCard } from "./components/BaseCard";
 import { TokenRow } from "./components/TokenRow";
-import { Help } from "./components/Help";
+import { Help } from "./components/Help/Help";
 import { NoGame } from "./components/NoGame";
 import { SpectatorModal } from "./components/SpectatorModal";
 
@@ -34,6 +34,7 @@ const Game = () => {
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
   const { loading, discardFate, flipToken, attachPower, leaveGame } = game;
+  const { newGame } = game;
 
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
@@ -122,9 +123,17 @@ const Game = () => {
   return (
     <>
       <DndProvider backend={Backend}>
-        <Help gameId={name} />
+        <Help
+          gameId={name}
+          canRestart={!spectator}
+          onNewGame={() => !spectator && newGame()}
+        />
         <Grid container direction="column" alignItems="center">
-          <Grid item container justify="center" style={{ padding: "2rem 0" }}>
+          <Grid
+            item
+            container
+            justify="center"
+            style={{ padding: "2rem 48px" }}>
             {otherTokens.map(({ tokens: ots, playerName, color }) => (
               <TokenRow color={color} selections={ots} name={playerName} />
             ))}

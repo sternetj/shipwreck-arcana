@@ -1,6 +1,6 @@
 import { useObjectVal } from "react-firebase-hooks/database";
-import { getGame } from "../../../services/firebase";
-import { Card } from "../../../services/game";
+import { getGame, fates } from "../../../services/firebase";
+import { Card, cards } from "../../../services/game";
 import { FateVal } from "../components/Fate";
 import { DropFate, DropPower } from "../components/Card";
 import { helpers } from "faker";
@@ -195,6 +195,28 @@ export function useGame(id: string) {
     }
   };
 
+  const newGame = () => {
+    if (!value) return;
+
+    const deck = helpers.shuffle(cards);
+    const activeCards = {
+      1: deck.shift(),
+      2: deck.shift(),
+      3: deck.shift(),
+      4: deck.shift(),
+    };
+
+    ref.update({
+      powers: [],
+      deck,
+      discard: [],
+      cards: activeCards,
+      fates: helpers.shuffle(fates),
+      doom: 0,
+      points: 0,
+    });
+  };
+
   return {
     loading,
     value,
@@ -207,6 +229,7 @@ export function useGame(id: string) {
     playPower,
     attachPower,
     leaveGame,
+    newGame,
   };
 }
 

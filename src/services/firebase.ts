@@ -134,4 +134,4 @@ const defaultTokens = {
   7: false,
 };
 
-export { fates };
+export { fates, defaultTokens };

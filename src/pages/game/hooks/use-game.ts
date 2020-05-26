@@ -1,5 +1,5 @@
 import { useObjectVal } from "react-firebase-hooks/database";
-import { getGame, fates } from "../../../services/firebase";
+import { getGame, fates, defaultTokens } from "../../../services/firebase";
 import { Card, cards } from "../../../services/game";
 import { FateVal } from "../components/Fate";
 import { DropFate, DropPower } from "../components/Card";
@@ -206,9 +206,15 @@ export function useGame(id: string) {
       4: deck.shift(),
     };
 
+    Object.keys(value.players).forEach((pId) => {
+      value.players[pId].fates = [];
+      value.players[pId].tokens = defaultTokens as any;
+    });
+
     ref.update({
       powers: [],
       deck,
+      players: value.players,
       discard: [],
       cards: activeCards,
       fates: helpers.shuffle(fates),

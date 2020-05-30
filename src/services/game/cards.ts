@@ -36,4 +36,5 @@ export const cards = [
   new Card("the-musicians", "exile"),
   new Card("the-fall", "amplify"),
   new Card("the-ash", "help"),
+  new Card("the-imago", "cycle"),
 ];

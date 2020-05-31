@@ -5,6 +5,7 @@ import { useDrop } from "react-dnd";
 import { Fate, FateVal } from "./Fate";
 import { CardIndex } from "../hooks/use-game";
 import { BaseCard } from "./BaseCard";
+import { onLongPress } from "../../../services/long-press";
 
 export interface CardProps {
   index: CardIndex | "hours";
@@ -54,6 +55,7 @@ export const Card: FC<CardProps> = ({
       showPower={showPower}
       ref={drop}
       style={styles}
+      {...onLongPress(() => onClick && onClick(card))}
       onContextMenu={(e) => {
         if (onClick) {
           onClick(card);

@@ -8,7 +8,8 @@ import { ConfirmFade } from "./components/ConfirmFade";
 import { Hours } from "./components/Hours";
 import { Fate, FateVal } from "./components/Fate";
 import { DndProvider } from "react-dnd";
-import Backend from "react-dnd-html5-backend";
+import Html5Backend from "react-dnd-html5-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
 import { AdjustScore } from "./components/AdjustScore";
 import { useGame, CardIndex, GameState } from "./hooks/use-game";
 import { Bag } from "./components/Bag";
@@ -19,6 +20,10 @@ import { NoGame } from "./components/NoGame";
 import { SpectatorModal } from "./components/SpectatorModal";
 import { TurnOrder } from "./components/TurnOrder";
 import { opponentColors } from "../../services/firebase";
+import { isMobile } from "is-mobile";
+import { onLongPress } from "../../services/long-press";
+
+const Backend: any = isMobile() ? TouchBackend : Html5Backend;
 
 const Game = () => {
   const router = useHistory();
@@ -165,6 +170,7 @@ const Game = () => {
               <BaseCard
                 card={power}
                 showPower
+                {...onLongPress(() => !spectator && setPowerToPlay(power))}
                 onContextMenu={(e) => {
                   if (spectator) return;
 

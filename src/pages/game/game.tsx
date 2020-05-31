@@ -10,13 +10,15 @@ import { Fate, FateVal } from "./components/Fate";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import { AdjustScore } from "./components/AdjustScore";
-import { useGame, CardIndex } from "./hooks/use-game";
+import { useGame, CardIndex, GameState } from "./hooks/use-game";
 import { Bag } from "./components/Bag";
 import { BaseCard } from "./components/BaseCard";
 import { TokenRow } from "./components/TokenRow";
 import { Help } from "./components/Help/Help";
 import { NoGame } from "./components/NoGame";
 import { SpectatorModal } from "./components/SpectatorModal";
+import { TurnOrder } from "./components/TurnOrder";
+import { opponentColors } from "../../services/firebase";
 
 const Game = () => {
   const router = useHistory();
@@ -71,9 +73,8 @@ const Game = () => {
   const canJoin = Object.keys(players).length < 5;
   const { fates = [], tokens = [], color } = players[playerId] || {};
   const score = { points, doom };
-  const otherTokens = Object.entries(players)
-    .filter(([k]) => k !== playerId)
-    .map(([_, v]) => v);
+  const sortedPlayers = sortPlayers(players, playerId);
+  const otherTokens = sortedPlayers.map(({ value }) => value);
 
   const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
     if (spectator) return;
@@ -189,7 +190,7 @@ const Game = () => {
               />
             )}
           </Grid>
-          <Grid container item justify="center">
+          <Grid container item justify="center" style={{ marginBottom: 65 }}>
             <TokenRow
               selections={tokens}
               color={color}
@@ -201,6 +202,8 @@ const Game = () => {
           </Grid>
         </Grid>
       </DndProvider>
+
+      <TurnOrder />
 
       <ConfirmFade
         prompt="Fade this card?"
@@ -236,6 +239,20 @@ const Game = () => {
       />
     </>
   );
+};
+
+const sortPlayers = (players: GameState["players"], playerId = "") => {
+  const sorted = Object.entries(players)
+    .sort(
+      ([, { color: colorA }], [, { color: colorB }]) =>
+        opponentColors.indexOf(colorA) - opponentColors.indexOf(colorB),
+    )
+    .map(([key, value]) => ({ key, value }));
+  const indexOfPlayer = sorted.findIndex(({ key }) => key === playerId);
+
+  if (indexOfPlayer === -1) return sorted;
+
+  return sorted.slice(indexOfPlayer + 1).concat(sorted.slice(0, indexOfPlayer));
 };
 
 const cardsIndices: CardIndex[] = [1, 2, 3, 4];

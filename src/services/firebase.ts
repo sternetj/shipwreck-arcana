@@ -93,8 +93,13 @@ export const joinGame = (
     (resolve, reject) => {
       const ref = db.ref(`${gameId}/players`);
       ref.once("value", function (snapshot) {
-        const colorIndex = Object.keys(snapshot.val()).length;
-        if (colorIndex >= opponentColors.length) {
+        const currentColors = Object.values(snapshot.val()).map(
+          (v: any) => v.color,
+        );
+        const newColor = opponentColors.find(
+          (c) => currentColors.indexOf(c) === -1,
+        );
+        if (!newColor) {
           return reject("Game is full");
         }
 
@@ -102,7 +107,7 @@ export const joinGame = (
           [player || playerId]: {
             playerName,
             fates: [],
-            color: opponentColors[colorIndex % opponentColors.length],
+            color: newColor,
             tokens: defaultTokens,
           },
         });
@@ -123,7 +128,13 @@ export const getGame = (gameId: string) => {
 };
 
 const fates = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7];
-const opponentColors: TokenColor[] = ["green", "red", "blue", "gray", "yellow"];
+export const opponentColors: TokenColor[] = [
+  "green",
+  "red",
+  "blue",
+  "gray",
+  "yellow",
+];
 const defaultTokens = {
   1: false,
   2: false,

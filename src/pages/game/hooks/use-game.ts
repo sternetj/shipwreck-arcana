@@ -253,7 +253,7 @@ const deserializeGame = (value: GameState | undefined) =>
     },
   };
 
-interface GameState {
+export interface GameState {
   cards: {
     [index in CardIndex]: Card;
   };

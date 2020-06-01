@@ -125,7 +125,9 @@ const Game = () => {
     closeConfirmPlayPower();
   };
 
-  console.log(JSON.stringify(value, null, 2));
+  if (process.env.NODE_ENV !== "production") {
+    console.log(JSON.stringify(value, null, 2));
+  }
   return (
     <>
       <DndProvider backend={Backend}>

@@ -10,7 +10,6 @@ interface Props {
 export const Bag: FC<Props> = ({ onClick, onDropFate }) => {
   const [{ canDrop }, drop] = useDrop({
     accept: "fate",
-    canDrop: (item: DropFate) => typeof item.source === "number",
     drop: (item) => onDropFate(item as DropFate),
     collect: (monitor) => ({
       canDrop: monitor.isOver() && monitor.canDrop(),

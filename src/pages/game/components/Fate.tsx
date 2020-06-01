@@ -2,19 +2,27 @@ import React, { FC } from "react";
 import { styled } from "@material-ui/core";
 import { useDrag } from "react-dnd";
 import { CardIndex } from "../hooks/use-game";
+import { onLongPress } from "../../../services/long-press";
 interface Props {
   num: FateVal;
   source?: CardIndex | string;
   styles?: React.CSSProperties;
+  onClick?: Function;
 }
-export const Fate: FC<Props> = ({ num: value, source, styles }) => {
+export const Fate: FC<Props> = ({ num: value, source, styles, onClick }) => {
   const [, drag] = useDrag({
     item: { type: "fate", value, source },
     canDrag: !!source,
   });
+  const handler = onClick || (() => {});
   return (
     <Tile
       ref={drag}
+      {...onLongPress(handler)}
+      onContextMenu={(e) => {
+        handler();
+        e.preventDefault();
+      }}
       style={{
         background: `url('pieces/fates.png') ${tileToSprite[value]}`,
         ...styles,

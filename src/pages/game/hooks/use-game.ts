@@ -58,6 +58,7 @@ export function useGame(id: string) {
       const current = value.players[source];
       current.fates = current.fates || [];
       current.fates.splice(current.fates.indexOf(fate), 1);
+      current.revealed = null as any;
       value.players[source] = current;
     } else {
       value.cards[source].removeFate(fate);
@@ -82,6 +83,7 @@ export function useGame(id: string) {
       const current = value.players[source];
       current.fates = current.fates || [];
       current.fates.splice(current.fates.indexOf(fate), 1);
+      current.revealed = null as any;
       value.players[source] = current;
     } else {
       value.cards[source].removeFate(fate);
@@ -98,6 +100,7 @@ export function useGame(id: string) {
     if (!value || !playerId) return;
     const current = value.players[playerId];
     current.fates = current.fates || [];
+    current.revealed = null as any;
     value.fates = helpers.shuffle(value.fates || []);
 
     if (value.fates?.length === 0) {
@@ -116,6 +119,7 @@ export function useGame(id: string) {
         ...value.players,
         [playerId]: {
           ...current,
+          revealed: null as any,
           fates: current.fates.concat(drawn!),
         },
       },
@@ -223,6 +227,21 @@ export function useGame(id: string) {
     });
   };
 
+  const revealFate = (playerId: string, fate: FateVal) => {
+    if (!value || !playerId) return;
+    const current = value.players[playerId];
+    current.revealed = fate;
+
+    ref.update({
+      players: {
+        ...value.players,
+        [playerId]: {
+          ...current,
+        },
+      },
+    });
+  };
+
   return {
     loading,
     value,
@@ -236,6 +255,7 @@ export function useGame(id: string) {
     attachPower,
     leaveGame,
     newGame,
+    revealFate,
   };
 }
 
@@ -268,6 +288,7 @@ export interface GameState {
       color: TokenColor;
       fates?: FateVal[];
       tokens: boolean[];
+      revealed?: FateVal;
     };
   };
   points: number;

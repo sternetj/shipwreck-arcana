@@ -4,7 +4,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
 import { Grid, CircularProgress } from "@material-ui/core";
 import { Card } from "./components/Card";
-import { ConfirmFade } from "./components/ConfirmFade";
+import { ConfirmDialog } from "./components/ConfirmDialog";
 import { Hours } from "./components/Hours";
 import { Fate, FateVal } from "./components/Fate";
 import { DndProvider } from "react-dnd";
@@ -31,6 +31,7 @@ const Game = () => {
   const { name, player } = qs.parse(search, { ignoreQueryPrefix: true });
   const [cardToFade, setCardToFade] = useState<1 | 2 | 3 | 4>();
   const [powerToPlay, setPowerToPlay] = useState<CardClass>();
+  const [fateToReveal, setFateToReveal] = useState<FateVal>();
   const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
   const [spectatorModalShown, setSpectatorModalShown] = useState<boolean>(
     false,
@@ -41,7 +42,7 @@ const Game = () => {
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
   const { loading, discardFate, flipToken, attachPower, leaveGame } = game;
-  const { newGame } = game;
+  const { revealFate, newGame } = game;
 
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
@@ -142,9 +143,17 @@ const Game = () => {
             container
             justify="center"
             style={{ padding: "2rem 48px" }}>
-            {otherTokens.map(({ tokens: ots, playerName, color }) => (
-              <TokenRow color={color} selections={ots} name={playerName} />
-            ))}
+            {otherTokens.map(
+              ({ tokens: ots, playerName, color, fates, revealed }) => (
+                <TokenRow
+                  color={color}
+                  tokens={fates}
+                  revealedIndex={fates?.indexOf(revealed as any)}
+                  selections={ots}
+                  name={playerName}
+                />
+              ),
+            )}
           </Grid>
           <Grid container item justify="center">
             {deck.length > 0 && <BaseCard card={deck[0]} />}
@@ -189,7 +198,12 @@ const Game = () => {
             alignItems="center"
             style={{ padding: "2rem 0" }}>
             {fates.map((f) => (
-              <Fate key={f} num={f as any} source={playerId} />
+              <Fate
+                key={f}
+                num={f}
+                source={playerId}
+                onClick={() => setFateToReveal(f)}
+              />
             ))}
             {!spectator && (
               <Bag
@@ -213,18 +227,28 @@ const Game = () => {
 
       <TurnOrder />
 
-      <ConfirmFade
+      <ConfirmDialog
         prompt="Fade this card?"
         open={!!cardToFade}
         onConfirm={onFade}
         onCancel={closeConfirmFade}
       />
 
-      <ConfirmFade
+      <ConfirmDialog
         prompt="Play this Power?"
         open={!!powerToPlay}
         onConfirm={onPlayPower}
         onCancel={closeConfirmPlayPower}
+      />
+
+      <ConfirmDialog
+        prompt="Reveal this fate?"
+        open={!!fateToReveal}
+        onConfirm={() => {
+          revealFate(playerId, fateToReveal!);
+          setFateToReveal(undefined);
+        }}
+        onCancel={() => setFateToReveal(undefined)}
       />
 
       <AdjustScore

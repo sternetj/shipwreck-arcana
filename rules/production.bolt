@@ -55,6 +55,7 @@ type Player {
   fates: Fate[] | Null,
   playerName: String,
   tokens: Boolean[],
+  revealed: Fate | Null,
 }
 
 type Fate extends Number {

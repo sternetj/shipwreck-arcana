@@ -13,7 +13,7 @@ interface Props {
   prompt: string;
 }
 
-export const ConfirmFade: FC<Props> = (props) => {
+export const ConfirmDialog: FC<Props> = (props) => {
   const { prompt, open, onCancel, onConfirm } = props;
   return (
     <Dialog open={open}>

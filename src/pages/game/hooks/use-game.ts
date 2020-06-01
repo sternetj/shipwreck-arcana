@@ -9,13 +9,18 @@ import { TokenColor } from "../components/token";
 export function useGame(id: string) {
   const ref = getGame(id);
   const [raw, loading] = useObjectVal<GameState>(ref);
-  console.log(raw);
   const value = deserializeGame(raw);
 
-  const updateScore = (points: Score) => ref.update(points);
+  const updateScore = (points: Score) => {
+    if (!value) return;
+    const snapshot = createSnapshot(value);
+
+    ref.update({ snapshot, ...points });
+  };
 
   const fadeCard = (index: CardIndex) => {
     if (!value) return;
+    const snapshot = createSnapshot(value);
     const newCard = value.deck.shift();
     const cardToFade = value.cards[index];
     const discardFates = cardToFade.fates;
@@ -29,6 +34,7 @@ export function useGame(id: string) {
     }
 
     ref.update({
+      snapshot,
       discard: value.discard,
       deck: value.deck,
       recentlyPlayed: null as any,
@@ -46,6 +52,7 @@ export function useGame(id: string) {
     { value: fate, source }: DropFate,
   ) => {
     if (!value) return;
+    const snapshot = createSnapshot(value);
     let playedOnHours: FateVal | null = null;
 
     if (index === "hours") {
@@ -76,6 +83,7 @@ export function useGame(id: string) {
     }
 
     ref.update({
+      snapshot,
       playedOnHours,
       recentlyPlayed,
       cards: {
@@ -88,6 +96,7 @@ export function useGame(id: string) {
 
   const discardFate = ({ value: fate, source }: DropFate) => {
     if (!value) return;
+    const snapshot = createSnapshot(value);
 
     if (typeof source === "string") {
       const current = value.players[source];
@@ -100,6 +109,7 @@ export function useGame(id: string) {
     }
 
     ref.update({
+      snapshot,
       fates: (value.fates || []).concat(fate),
       recentlyPlayed: null as any,
       cards: value.cards,
@@ -109,6 +119,7 @@ export function useGame(id: string) {
 
   const drawFate = (playerId: string) => {
     if (!value || !playerId) return;
+    const snapshot = createSnapshot(value);
     const current = value.players[playerId];
     current.fates = current.fates || [];
     current.revealed = null as any;
@@ -125,6 +136,7 @@ export function useGame(id: string) {
 
     const drawn = value.fates.pop();
     ref.update({
+      snapshot,
       fates: value.fates,
       recentlyPlayed: null as any,
       players: {
@@ -144,7 +156,6 @@ export function useGame(id: string) {
     current.tokens[fate] = flipToken;
 
     ref.update({
-      fates: value.fates,
       players: {
         ...value.players,
         [playerId]: {
@@ -157,6 +168,7 @@ export function useGame(id: string) {
 
   const playPower = (power: Card) => {
     if (!value) return;
+    const snapshot = createSnapshot(value);
 
     value.discard = (value.discard || []).concat(power);
     value.powers = value.powers || [];
@@ -172,6 +184,7 @@ export function useGame(id: string) {
     }
 
     ref.update({
+      snapshot,
       activePowers: value.activePowers,
       discard: value.discard,
       recentlyPlayed: null as any,
@@ -182,6 +195,7 @@ export function useGame(id: string) {
 
   const attachPower = (index: CardIndex, { value: power }: DropPower) => {
     if (!value) return;
+    const snapshot = createSnapshot(value);
 
     const cardToUpdate = value.cards[index];
     cardToUpdate.addPower(power);
@@ -193,6 +207,7 @@ export function useGame(id: string) {
     }
 
     ref.update({
+      snapshot,
       powers: value.powers,
       recentlyPlayed: null as any,
       cards: {
@@ -208,6 +223,7 @@ export function useGame(id: string) {
     if (Object.keys(value.players).length > 1) {
       const { [playerId]: leaving, ...remainingPlayers } = value.players;
       ref.update({
+        snapshot: null,
         players: remainingPlayers,
       });
     } else {
@@ -232,6 +248,7 @@ export function useGame(id: string) {
     });
 
     ref.update({
+      snapshot: null,
       powers: [],
       deck,
       players: value.players,
@@ -260,8 +277,36 @@ export function useGame(id: string) {
   };
 
   const removeActivePowers = () => {
+    const snapshot = createSnapshot(value);
     ref.update({
+      snapshot,
       activePowers: null as any,
+    });
+  };
+
+  const undoAction = () => {
+    if (!value || !value.snapshot) return;
+    const oldState = JSON.parse(atob(value.snapshot)) as GameState;
+    const mergedPlayers = Object.entries(value.players)
+      .map<[string, Player]>(([key, pVal]) => [
+        key,
+        {
+          ...oldState.players[key],
+          revealed: pVal.revealed || (null as any),
+          tokens: pVal.tokens,
+        },
+      ])
+      .reduce(
+        (acc, [key, val]) => ({
+          ...acc,
+          [key]: val,
+        }),
+        {} as GameState["players"],
+      );
+
+    ref.set({
+      ...oldState,
+      players: mergedPlayers,
     });
   };
 
@@ -280,6 +325,7 @@ export function useGame(id: string) {
     newGame,
     revealFate,
     removeActivePowers,
+    undoAction,
   };
 }
 
@@ -298,6 +344,13 @@ const deserializeGame = (value: GameState | undefined) =>
     },
   };
 
+const createSnapshot = (state: GameState | undefined) => {
+  if (!state) return null;
+
+  const { snapshot, ...value } = state;
+  return btoa(JSON.stringify(value));
+};
+
 export interface GameState {
   cards: {
     [index in CardIndex]: Card;
@@ -312,17 +365,20 @@ export interface GameState {
     fate: FateVal;
   };
   players: {
-    [playerId: string]: {
-      playerName: string;
-      color: TokenColor;
-      fates?: FateVal[];
-      tokens: boolean[];
-      revealed?: FateVal;
-    };
+    [playerId: string]: Player;
   };
   points: number;
   powers: Card[];
   activePowers: Card[];
+  snapshot: string;
+}
+
+interface Player {
+  playerName: string;
+  color: TokenColor;
+  fates?: FateVal[];
+  tokens: boolean[];
+  revealed?: FateVal;
 }
 
 type Score = Pick<GameState, "points" | "doom">;

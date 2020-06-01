@@ -44,7 +44,7 @@ const Game = () => {
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
   const { loading, discardFate, flipToken, attachPower, leaveGame } = game;
-  const { revealFate, newGame, removeActivePowers } = game;
+  const { revealFate, newGame, removeActivePowers, undoAction } = game;
 
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
@@ -136,8 +136,10 @@ const Game = () => {
       <DndProvider backend={Backend}>
         <Help
           gameId={name}
-          canRestart={!spectator}
+          canControl={!spectator}
+          canUndo={!!value.snapshot}
           onNewGame={() => !spectator && newGame()}
+          onUndo={() => !spectator && undoAction()}
         />
         <Grid container direction="column" alignItems="center">
           <Grid

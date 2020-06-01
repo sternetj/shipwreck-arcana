@@ -4,18 +4,28 @@ import { IconButton, Grid } from "@material-ui/core";
 import HelpRounded from "@material-ui/icons/HelpRounded";
 import ExitToApp from "@material-ui/icons/ExitToAppOutlined";
 import Refresh from "@material-ui/icons/Refresh";
+import Undo from "@material-ui/icons/Undo";
 import { HowToPlayModal } from "./HowToPlayModal";
 import { ExitGameModal } from "./ExitGameModal";
 import { NewGameModal } from "./NewGameModal";
+import { ConfirmDialog } from "../ConfirmDialog";
 
 interface Props {
   gameId: string;
-  canRestart: boolean;
+  canControl: boolean;
+  canUndo: boolean;
   onNewGame: Function;
+  onUndo: Function;
 }
 
-export const Help: FC<Props> = ({ gameId, canRestart, onNewGame }) => {
-  const [open, setOpen] = useState<"howTo" | "exit" | "newGame">();
+export const Help: FC<Props> = ({
+  gameId,
+  canControl,
+  canUndo,
+  onNewGame,
+  onUndo,
+}) => {
+  const [open, setOpen] = useState<"howTo" | "exit" | "newGame" | "undo">();
 
   const close = useMemo(() => () => setOpen(undefined), [setOpen]);
 
@@ -30,7 +40,15 @@ export const Help: FC<Props> = ({ gameId, canRestart, onNewGame }) => {
           onClick={() => setOpen("howTo")}>
           <HelpRounded />
         </IconButton>
-        {canRestart && (
+        {canControl && canUndo && (
+          <IconButton
+            title="Undo"
+            color="inherit"
+            onClick={() => setOpen("undo")}>
+            <Undo />
+          </IconButton>
+        )}
+        {canControl && (
           <IconButton
             title="New Game"
             color="inherit"
@@ -49,7 +67,7 @@ export const Help: FC<Props> = ({ gameId, canRestart, onNewGame }) => {
       <HowToPlayModal gameId={gameId} open={open === "howTo"} onClose={close} />
 
       <NewGameModal
-        open={open === "newGame" && canRestart}
+        open={open === "newGame" && canControl}
         onNewGame={() => {
           onNewGame();
           close();
@@ -58,6 +76,16 @@ export const Help: FC<Props> = ({ gameId, canRestart, onNewGame }) => {
       />
 
       <ExitGameModal open={open === "exit"} onCancel={close} />
+
+      <ConfirmDialog
+        prompt="Are you sure you want to undo the previous action?"
+        open={open === "undo" && canControl}
+        onCancel={close}
+        onConfirm={() => {
+          onUndo();
+          close();
+        }}
+      />
     </>
   );
 };

@@ -10,6 +10,7 @@ import {
   Grid,
   ListSubheader,
   DialogProps,
+  Link,
 } from "@material-ui/core";
 import { ShareLink } from "../../../../components/ShareLink";
 import { Fate } from "../Fate";
@@ -34,11 +35,12 @@ export const HowToPlayModal: FC<Props> = ({ gameId, ...dialogProps }) => {
             <Inline>
               <Fate num={3} />
             </Inline>{" "}
-            onto playable cards or the bag when applicable
+            onto playable cards or the bag. Right-click or long press to reveal
+            it to the other players.
           </ListItem>
           <ListItem>
-            Click on a card to view it full screen or right-click it to perform
-            an action <CardImg src={sampleCard.cardPath} />
+            Click on a card to view it full screen or right-click (long press)
+            it to perform an action <CardImg src={sampleCard.cardPath} />
           </ListItem>
           <ListItem style={{ display: "inline-block" }}>
             Click a token{" "}
@@ -63,6 +65,17 @@ export const HowToPlayModal: FC<Props> = ({ gameId, ...dialogProps }) => {
                 <b>6</b>: Doomed!
               </span>
             </Grid>
+          </ListItem>
+          <ListItem>
+            For game specific details please refer to the{" "}
+            <Link
+              style={{ marginLeft: 4 }}
+              target="_blank"
+              color="textSecondary"
+              rel="noopener noreferrer"
+              href="https://www.meromorphgames.com/shipwreck-arcana/rules">
+              Rules
+            </Link>
           </ListItem>
         </List>
         <ShareLink gameId={gameId} />

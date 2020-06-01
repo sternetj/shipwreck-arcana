@@ -24,7 +24,7 @@ export const ShareLink: FC<Props> = (props) => {
   return (
     <Grid container justify="center" style={style}>
       <Typography variant="caption">
-        Click the <b>join</b> link to share it with your friends
+        Invite your friends by clicking this link and sharing it with them
       </Typography>
       <Input
         value={`${window.location.origin}/join?name=${gameId}`}

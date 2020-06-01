@@ -25,6 +25,8 @@ type Game {
   players: Map<String, Player>,
   points: Number,
   powers: Card[] | Null,
+  activePowers: Card[] | Null,
+  recentlyPlayed: Recent | Null,
 }
 
 type Card {
@@ -32,6 +34,11 @@ type Card {
   name: CardName,
   power: Power,
   attachedPowers: BaseCard[] | Null,
+}
+
+type Recent {
+  fate: Fate,
+  source: CardKey,
 }
 
 type BaseCard {
@@ -64,6 +71,10 @@ type Fate extends Number {
 
 type CardIndex extends String {
   validate() { this == "1" || this == "2" || this == "3" || this == "4" }
+}
+
+type CardKey extends Number {
+  validate() { this == 1 || this == 2 || this == 3 || this == 4 }
 }
 
 type CardName extends String {

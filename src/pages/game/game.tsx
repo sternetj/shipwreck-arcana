@@ -22,6 +22,7 @@ import { TurnOrder } from "./components/TurnOrder";
 import { opponentColors } from "../../services/firebase";
 import { isMobile } from "is-mobile";
 import { onLongPress } from "../../services/long-press";
+import { ActivePowersRow } from "./components/ActivePowersRow";
 
 const Backend: any = isMobile() ? TouchBackend : Html5Backend;
 
@@ -42,7 +43,7 @@ const Game = () => {
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
   const { loading, discardFate, flipToken, attachPower, leaveGame } = game;
-  const { revealFate, newGame } = game;
+  const { revealFate, newGame, removeActivePowers } = game;
 
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
@@ -74,7 +75,7 @@ const Game = () => {
     );
 
   const { points, doom, deck, cards, powers, players } = value;
-  const { playedOnHours } = value;
+  const { playedOnHours, recentlyPlayed, activePowers } = value;
   const spectator = !players[playerId];
   const canJoin = Object.keys(players).length < 5;
   const { fates = [], tokens = [], color } = players[playerId] || {};
@@ -184,6 +185,9 @@ const Game = () => {
                 key={i}
                 index={i}
                 card={cards[i]}
+                recentlyPlayed={
+                  i === recentlyPlayed?.source ? recentlyPlayed : undefined
+                }
                 acceptsDrop={!spectator ? ["fate", "power"] : []}
                 onClick={confirmFade(i)}
                 onDropFate={(val) => !spectator && playFate(i, val)}
@@ -191,8 +195,12 @@ const Game = () => {
               />
             ))}
           </Grid>
+          <ActivePowersRow
+            powers={activePowers}
+            onClearPowers={removeActivePowers}
+          />
           <Grid container justify="center">
-            {(powers || []).map((power) => (
+            {powers.map((power) => (
               <BaseCard
                 card={power}
                 showPower

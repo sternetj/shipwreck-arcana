@@ -3,7 +3,7 @@ import { Card as CardClass } from "../../../services/game";
 import { styled, Grid } from "@material-ui/core";
 import { useDrop } from "react-dnd";
 import { Fate, FateVal } from "./Fate";
-import { CardIndex } from "../hooks/use-game";
+import { CardIndex, GameState } from "../hooks/use-game";
 import { BaseCard } from "./BaseCard";
 import { onLongPress } from "../../../services/long-press";
 
@@ -12,20 +12,15 @@ export interface CardProps {
   card: CardClass;
   acceptsDrop?: ("power" | "fate")[];
   showPower?: boolean;
+  recentlyPlayed?: GameState["recentlyPlayed"];
   onClick?: (card: CardClass) => any;
   onDropFate?: (val: DropFate) => any;
   onDropPower?: (val: DropPower) => any;
 }
 
-export const Card: FC<CardProps> = ({
-  index,
-  card,
-  acceptsDrop = [],
-  onClick,
-  showPower = false,
-  onDropFate,
-  onDropPower,
-}) => {
+export const Card: FC<CardProps> = (props) => {
+  const { index, card, acceptsDrop = [], onClick, showPower = false } = props;
+  const { onDropFate, onDropPower, recentlyPlayed } = props;
   const [{ canDrop }, drop] = useDrop({
     accept: ["fate", "power"],
     canDrop: (item: DropFate | DropPower) => acceptsDrop.includes(item.type),
@@ -49,6 +44,11 @@ export const Card: FC<CardProps> = ({
     };
   }
 
+  let recentIndex = -1;
+  if (recentlyPlayed) {
+    recentIndex = card.fates.lastIndexOf(recentlyPlayed.fate);
+  }
+
   return (
     <BaseCard
       card={card}
@@ -64,7 +64,12 @@ export const Card: FC<CardProps> = ({
       }}>
       <FateRow container justify="center">
         {card.fates.map((f, k) => (
-          <Fate key={k} num={f as any} source={index} />
+          <Fate
+            key={k}
+            num={f as any}
+            source={index}
+            highlight={k === recentIndex}
+          />
         ))}
       </FateRow>
     </BaseCard>

@@ -6,10 +6,12 @@ import { onLongPress } from "../../../services/long-press";
 interface Props {
   num: FateVal;
   source?: CardIndex | string;
+  highlight?: boolean;
   styles?: React.CSSProperties;
   onClick?: Function;
 }
-export const Fate: FC<Props> = ({ num: value, source, styles, onClick }) => {
+export const Fate: FC<Props> = (props) => {
+  const { num: value, source, styles, onClick, highlight } = props;
   const [, drag] = useDrag({
     item: { type: "fate", value, source },
     canDrag: !!source,
@@ -25,6 +27,7 @@ export const Fate: FC<Props> = ({ num: value, source, styles, onClick }) => {
       }}
       style={{
         background: `url('pieces/fates.png') ${tileToSprite[value]}`,
+        boxShadow: highlight ? "0px 0px 4px 3px #2d9966" : undefined,
         ...styles,
       }}
     />

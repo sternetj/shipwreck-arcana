@@ -31,6 +31,7 @@ export function useGame(id: string) {
     ref.update({
       discard: value.discard,
       deck: value.deck,
+      recentlyPlayed: null as any,
       powers: (value.powers || []).concat(cardToFade),
       fates: (value.fates || []).concat(discardFates),
       cards: {
@@ -66,8 +67,17 @@ export function useGame(id: string) {
 
     cardToUpdate.addFate(fate);
 
+    let recentlyPlayed = value.recentlyPlayed || null;
+    if (source !== index) {
+      recentlyPlayed = {
+        source: index,
+        fate,
+      };
+    }
+
     ref.update({
       playedOnHours,
+      recentlyPlayed,
       cards: {
         ...value.cards,
         [index]: cardToUpdate,
@@ -91,6 +101,7 @@ export function useGame(id: string) {
 
     ref.update({
       fates: (value.fates || []).concat(fate),
+      recentlyPlayed: null as any,
       cards: value.cards,
       players: value.players,
     });
@@ -115,6 +126,7 @@ export function useGame(id: string) {
     const drawn = value.fates.pop();
     ref.update({
       fates: value.fates,
+      recentlyPlayed: null as any,
       players: {
         ...value.players,
         [playerId]: {
@@ -150,7 +162,8 @@ export function useGame(id: string) {
     value.powers = value.powers || [];
     const index = value.powers.findIndex((c) => c.name === power.name);
     if (index >= 0) {
-      value.powers.splice(index, 1);
+      const played = value.powers.splice(index, 1);
+      value.activePowers = value.activePowers.concat(played);
     }
 
     if ((value.deck || []).length === 0) {
@@ -159,7 +172,9 @@ export function useGame(id: string) {
     }
 
     ref.update({
+      activePowers: value.activePowers,
       discard: value.discard,
+      recentlyPlayed: null as any,
       deck: value.deck,
       powers: value.powers,
     });
@@ -179,6 +194,7 @@ export function useGame(id: string) {
 
     ref.update({
       powers: value.powers,
+      recentlyPlayed: null as any,
       cards: {
         ...value.cards,
         [index]: cardToUpdate,
@@ -233,12 +249,19 @@ export function useGame(id: string) {
     current.revealed = fate;
 
     ref.update({
+      recentlyPlayed: null as any,
       players: {
         ...value.players,
         [playerId]: {
           ...current,
         },
       },
+    });
+  };
+
+  const removeActivePowers = () => {
+    ref.update({
+      activePowers: null as any,
     });
   };
 
@@ -256,6 +279,7 @@ export function useGame(id: string) {
     leaveGame,
     newGame,
     revealFate,
+    removeActivePowers,
   };
 }
 
@@ -265,6 +289,7 @@ const deserializeGame = (value: GameState | undefined) =>
     ...value,
     deck: (value.deck || []).map((c) => Card.from(c)),
     powers: (value.powers || []).map((c) => Card.from(c)),
+    activePowers: (value.activePowers || []).map((c) => Card.from(c)),
     cards: {
       1: Card.from(value.cards[1]),
       2: Card.from(value.cards[2]),
@@ -282,6 +307,10 @@ export interface GameState {
   doom: number;
   fates: FateVal[];
   playedOnHours?: FateVal;
+  recentlyPlayed?: {
+    source: CardIndex;
+    fate: FateVal;
+  };
   players: {
     [playerId: string]: {
       playerName: string;
@@ -293,6 +322,7 @@ export interface GameState {
   };
   points: number;
   powers: Card[];
+  activePowers: Card[];
 }
 
 type Score = Pick<GameState, "points" | "doom">;

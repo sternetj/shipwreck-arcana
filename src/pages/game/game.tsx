@@ -20,11 +20,12 @@ import { NoGame } from "./components/NoGame";
 import { SpectatorModal } from "./components/SpectatorModal";
 import { TurnOrder } from "./components/TurnOrder";
 import { opponentColors } from "../../services/firebase";
-import { isMobile } from "is-mobile";
+import { isMobile as checkIsMobile } from "is-mobile";
 import { onLongPress } from "../../services/long-press";
 import { ActivePowersRow } from "./components/ActivePowersRow";
 
-const Backend: any = isMobile() ? TouchBackend : Html5Backend;
+const isMobile = checkIsMobile();
+const Backend: any = isMobile ? TouchBackend : Html5Backend;
 
 const Game = () => {
   const router = useHistory();
@@ -235,7 +236,11 @@ const Game = () => {
               />
             )}
           </Grid>
-          <Grid container item justify="center" style={{ marginBottom: 65 }}>
+          <Grid
+            container
+            item
+            justify="center"
+            style={{ marginBottom: isMobile ? 65 : 0 }}>
             <TokenRow
               selections={tokens}
               color={color}

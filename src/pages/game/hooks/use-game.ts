@@ -245,10 +245,14 @@ export function useGame(id: string) {
     Object.keys(value.players).forEach((pId) => {
       value.players[pId].fates = [];
       value.players[pId].tokens = defaultTokens as any;
+      value.players[pId].revealed = null as any;
     });
 
     ref.update({
+      recentlyPlayed: null,
       snapshot: null,
+      playedOnHours: null,
+      activePowers: [],
       powers: [],
       deck,
       players: value.players,

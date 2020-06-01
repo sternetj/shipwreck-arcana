@@ -156,7 +156,22 @@ const Game = () => {
             )}
           </Grid>
           <Grid container item justify="center">
-            {deck.length > 0 && <BaseCard card={deck[0]} />}
+            {deck.length > 0 && (
+              <BaseCard
+                card={deck[0]}
+                style={{
+                  boxShadow: deck
+                    .slice(1, 3)
+                    .map(
+                      (_, i) =>
+                        `${2 * i + 1}px ${2 * i + 1}px 0 ${
+                          2 + i
+                        }px hsl(0, 0%, ${35 - 10 * i}%)`,
+                    )
+                    .join(", "),
+                }}
+              />
+            )}
             <Hours
               {...score}
               acceptsDrop={!spectator ? ["fate"] : []}

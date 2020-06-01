@@ -150,6 +150,7 @@ const Game = () => {
             {otherTokens.map(
               ({ tokens: ots, playerName, color, fates, revealed }) => (
                 <TokenRow
+                  key={color}
                   color={color}
                   tokens={fates}
                   revealedIndex={fates?.indexOf(revealed as any)}
@@ -200,11 +201,13 @@ const Game = () => {
           </Grid>
           <ActivePowersRow
             powers={activePowers}
-            onClearPowers={removeActivePowers}
+            canClear={!spectator}
+            onClearPowers={() => !spectator && removeActivePowers()}
           />
           <Grid container justify="center">
             {powers.map((power) => (
               <BaseCard
+                key={power.name}
                 card={power}
                 showPower
                 {...onLongPress(() => !spectator && setPowerToPlay(power))}

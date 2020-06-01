@@ -16,7 +16,7 @@ type Props = Omit<CardProps, "card" | "index"> & {
 export const Hours: FC<Props> = ({ doom, points, playedOnHours, ...rest }) => {
   const same = doom === points;
   return (
-    <Container alignItems="center">
+    <Container style={{ alignItems: "center" }}>
       <Card {...rest} index="hours" card={theHours} />
       <Doom
         style={{

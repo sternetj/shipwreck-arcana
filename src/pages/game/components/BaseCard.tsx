@@ -20,7 +20,9 @@ export const BaseCard = React.forwardRef<
   });
 
   return (
-    <Card direction="column" innerRef={drag} style={{ position: "relative" }}>
+    <Card
+      innerRef={drag}
+      style={{ position: "relative", flexDirection: "column" }}>
       <Adornments container direction="row" justify="flex-end">
         {card.attachedPowers.map((p) => (
           <PowerAdornment card={p} />

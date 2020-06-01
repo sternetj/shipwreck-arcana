@@ -32,8 +32,13 @@ export const Help: FC<Props> = ({
   return (
     <>
       <Grid
-        direction="column"
-        style={{ position: "absolute", right: 0, top: 0, display: "flex" }}>
+        style={{
+          position: "absolute",
+          right: 0,
+          top: 0,
+          display: "flex",
+          flexDirection: "column",
+        }}>
         <IconButton
           title="Help"
           color="inherit"

@@ -199,23 +199,6 @@ const Game = () => {
               />
             ))}
           </Grid>
-
-          {/* <Grid container justify="center">
-            {powers.map((power) => (
-              <BaseCard
-                key={power.name}
-                card={power}
-                showPower
-                {...onLongPress(() => !spectator && setPowerToPlay(power))}
-                onContextMenu={(e) => {
-                  if (spectator) return;
-
-                  setPowerToPlay(power);
-                  e.preventDefault();
-                }}
-              />
-            ))}
-          </Grid> */}
           <Grid item container justify="center" direction="row">
             <ActivePowersRow
               powers={activePowers}

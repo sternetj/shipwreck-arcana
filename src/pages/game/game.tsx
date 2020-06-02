@@ -227,6 +227,7 @@ const Game = () => {
               style={{
                 display: "flex",
                 flexDirection: "row",
+                flexWrap: "wrap",
                 margin: "10px 0",
               }}>
               {powers.map((power) => (

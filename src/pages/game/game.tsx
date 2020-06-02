@@ -199,12 +199,8 @@ const Game = () => {
               />
             ))}
           </Grid>
-          <ActivePowersRow
-            powers={activePowers}
-            canClear={!spectator}
-            onClearPowers={() => !spectator && removeActivePowers()}
-          />
-          <Grid container justify="center">
+
+          {/* <Grid container justify="center">
             {powers.map((power) => (
               <BaseCard
                 key={power.name}
@@ -219,6 +215,35 @@ const Game = () => {
                 }}
               />
             ))}
+          </Grid> */}
+          <Grid item container justify="center" direction="row">
+            <ActivePowersRow
+              powers={activePowers}
+              canClear={!spectator}
+              onClearPowers={() => !spectator && removeActivePowers()}
+            />
+            <Grid
+              item
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                margin: "10px 0",
+              }}>
+              {powers.map((power) => (
+                <BaseCard
+                  key={power.name}
+                  card={power}
+                  showPower
+                  {...onLongPress(() => !spectator && setPowerToPlay(power))}
+                  onContextMenu={(e) => {
+                    if (spectator) return;
+
+                    setPowerToPlay(power);
+                    e.preventDefault();
+                  }}
+                />
+              ))}
+            </Grid>
           </Grid>
           <Grid
             container

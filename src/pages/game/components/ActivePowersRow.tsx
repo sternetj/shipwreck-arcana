@@ -15,29 +15,35 @@ export const ActivePowersRow: FC<Props> = (props) => {
 
   return (
     <>
-      <Grid item container alignItems="center" direction="column">
-        {!!powers.length && <StyledDivider />}
-        <Grid item container justify="center">
+      <Grid
+        item
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}>
+        {!!powers.length && (
+          <StyledDivider style={{ marginBottom: -24, marginTop: 22 }} />
+        )}
+        <Grid item container justify="center" style={{ margin: "10px 0" }}>
           {powers.map((power) => (
             <BaseCard key={power.name} card={power} showPower />
           ))}
         </Grid>
-        {!!powers.length && canClear && (
-          <Button
-            onClick={() => setOpen(true)}
-            color="primary"
-            style={{ marginTop: 16 }}
-            variant="contained">
-            Clear Active Powers
-          </Button>
-        )}
-        {!!powers.length && !canClear && (
+        {!!powers.length && (
           <>
-            <Typography
-              variant="h6"
-              color="secondary"
-              style={{ marginTop: 16 }}>
+            <Typography variant="body1" color="secondary">
               Active Powers
+              {canClear && (
+                <Button
+                  title="Click to remove active powers"
+                  onClick={() => setOpen(true)}
+                  size="small"
+                  color="primary"
+                  variant="text">
+                  ( Clear )
+                </Button>
+              )}
             </Typography>
           </>
         )}
@@ -58,8 +64,9 @@ export const ActivePowersRow: FC<Props> = (props) => {
 };
 
 const StyledDivider = styled(Divider)({
-  alignSelf: "stretch",
-  margin: "0 20vw ",
-  marginTop: "1.5rem",
-  backgroundColor: "rgba(45, 153, 102, 0.24)",
+  // alignSelf: "stretch",
+  // margin: "0 auto",
+  marginTop: "-2px",
+  width: "100%",
+  borderBottom: "2px solid rgba(45, 153, 102, 0.24)",
 });

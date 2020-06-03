@@ -69,8 +69,7 @@ type ExtractProps<T> = T extends ComponentType<infer P> ? P : never;
 
 const Img = styled("img")({
   boxSizing: "border-box",
-  minHeight: 170,
-  height: "25vh",
+  height: "13.5rem",
   margin: "24px",
   marginBottom: 0,
 });
@@ -87,8 +86,7 @@ const Card = styled(Grid)({
 });
 
 const StyledBox = styled(Box)({
-  minWidth: 147,
-  width: "18.56vh",
+  width: "calc(7.83rem + 48px)",
   "&.fade-enter": {
     opacity: 0,
     transform: "translateY(24px)",

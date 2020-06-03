@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Grid, Typography, GridProps, styled } from "@material-ui/core";
+import { Grid, Typography, styled } from "@material-ui/core";
 import { Token, TokenColor } from "./token";
 import { FateVal, Fate } from "./Fate";
 
@@ -10,25 +10,18 @@ interface Props {
   revealedIndex?: number;
   color: TokenColor;
   onClick?: (f: FateVal) => void;
-  fullWidth?: boolean;
 }
 export const TokenRow: FC<Props> = (props) => {
-  const { selections, name, color, fullWidth, onClick, tokens = [] } = props;
+  const { selections, name, color, onClick, tokens = [] } = props;
   const { revealedIndex } = props;
 
-  let sizing: Pick<GridProps, "xs" | "md" | "sm"> = {
-    xs: 12,
-    md: 12,
-    sm: 12,
-  };
-
-  if (!fullWidth) {
-    sizing.md = 3;
-    sizing.sm = 6;
-  }
-
   return (
-    <Grid item container alignItems="center" direction="column" {...sizing}>
+    <Grid
+      item
+      container
+      alignItems="center"
+      direction="column"
+      style={{ maxWidth: 333 }}>
       <Grid item container justify="center">
         {tokenVals.map((f) => (
           <Token

@@ -7,14 +7,14 @@ import {
   DialogActions,
   Button,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
 
 interface Props extends DialogProps {
   onCancel: Function;
+  onExitGame: Function;
 }
 
-export const ExitGameModal: FC<Props> = ({ onCancel, ...dialogProps }) => {
-  const router = useHistory();
+export const ExitGameModal: FC<Props> = (props) => {
+  const { onCancel, onExitGame, ...dialogProps } = props;
 
   return (
     <Dialog {...dialogProps}>
@@ -29,7 +29,7 @@ export const ExitGameModal: FC<Props> = ({ onCancel, ...dialogProps }) => {
         <Button
           variant="contained"
           color="secondary"
-          onClick={() => router.push("/")}>
+          onClick={() => onExitGame()}>
           Exit Game
         </Button>
       </DialogActions>

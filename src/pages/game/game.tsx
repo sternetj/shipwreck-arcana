@@ -23,6 +23,7 @@ import { opponentColors } from "../../services/firebase";
 import { isMobile as checkIsMobile } from "is-mobile";
 import { onLongPress } from "../../services/long-press";
 import { ActivePowersRow } from "./components/ActivePowersRow";
+import { PlayerTokensRow } from "./components/PlayerTokensRow";
 
 const isMobile = checkIsMobile();
 const Backend: any = isMobile ? TouchBackend : Html5Backend;
@@ -51,11 +52,6 @@ const Game = () => {
       window.onbeforeunload = () => leaveGame(playerId);
     }
   }, [leaveGame, playerId]);
-
-  useEffect(() => {
-    return () => leaveGame(playerId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (!loading && !value) {
     return (
@@ -140,26 +136,13 @@ const Game = () => {
           canUndo={!!value.snapshot}
           onNewGame={() => !spectator && newGame()}
           onUndo={() => !spectator && undoAction()}
+          onExitGame={() => {
+            leaveGame(playerId);
+            router.push("/");
+          }}
         />
         <Grid container direction="column" alignItems="center">
-          <Grid
-            item
-            container
-            justify="center"
-            style={{ padding: "2rem 48px" }}>
-            {otherTokens.map(
-              ({ tokens: ots, playerName, color, fates, revealed }) => (
-                <TokenRow
-                  key={color}
-                  color={color}
-                  tokens={fates}
-                  revealedIndex={fates?.indexOf(revealed as any)}
-                  selections={ots}
-                  name={playerName}
-                />
-              ),
-            )}
-          </Grid>
+          <PlayerTokensRow tokens={otherTokens} />
           <Grid container item justify="center">
             {deck.length > 0 && (
               <BaseCard
@@ -261,7 +244,6 @@ const Game = () => {
             <TokenRow
               selections={tokens}
               color={color}
-              fullWidth
               onClick={(f: FateVal) =>
                 !spectator && flipToken(playerId, f, !tokens[f])
               }

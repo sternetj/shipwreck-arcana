@@ -377,7 +377,7 @@ export interface GameState {
   snapshot: string;
 }
 
-interface Player {
+export interface Player {
   playerName: string;
   color: TokenColor;
   fates?: FateVal[];

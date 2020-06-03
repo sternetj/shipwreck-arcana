@@ -1,5 +1,5 @@
 import React, { FC, useRef, useState } from "react";
-import { Grid, Icon, Popover, Typography } from "@material-ui/core";
+import { Grid, Icon, Popover, Typography, styled } from "@material-ui/core";
 
 export const TurnOrder: FC = () => {
   const ref = useRef();
@@ -9,9 +9,7 @@ export const TurnOrder: FC = () => {
   const onClose = () => setOpen(false);
 
   return (
-    <Grid
-      direction="column"
-      style={{ position: "absolute", right: 10, bottom: 10, display: "flex" }}>
+    <Container>
       <Icon
         style={{ width: 50, height: 50 }}
         onPointerEnter={onOpen}
@@ -43,6 +41,14 @@ export const TurnOrder: FC = () => {
           <Typography>Turn Order starting with Green</Typography>
         </div>
       </Popover>
-    </Grid>
+    </Container>
   );
 };
+
+const Container = styled(Grid)({
+  position: "absolute",
+  right: 10,
+  bottom: 10,
+  display: "flex",
+  flexDirection: "column",
+});

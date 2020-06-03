@@ -16,15 +16,11 @@ interface Props {
   canUndo: boolean;
   onNewGame: Function;
   onUndo: Function;
+  onExitGame: Function;
 }
 
-export const Help: FC<Props> = ({
-  gameId,
-  canControl,
-  canUndo,
-  onNewGame,
-  onUndo,
-}) => {
+export const Help: FC<Props> = (props) => {
+  const { gameId, canControl, canUndo, onNewGame, onUndo, onExitGame } = props;
   const [open, setOpen] = useState<"howTo" | "exit" | "newGame" | "undo">();
 
   const close = useMemo(() => () => setOpen(undefined), [setOpen]);
@@ -80,7 +76,11 @@ export const Help: FC<Props> = ({
         onCancel={close}
       />
 
-      <ExitGameModal open={open === "exit"} onCancel={close} />
+      <ExitGameModal
+        open={open === "exit"}
+        onCancel={close}
+        onExitGame={onExitGame}
+      />
 
       <ConfirmDialog
         prompt="Are you sure you want to undo the previous action?"

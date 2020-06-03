@@ -17,7 +17,7 @@ export const Hours: FC<Props> = ({ doom, points, playedOnHours, ...rest }) => {
   const same = doom === points;
   return (
     <Container style={{ alignItems: "center" }}>
-      <Card {...rest} index="hours" card={theHours} transition="fade" />
+      <Card {...rest} index="hours" card={theHours} />
       <Doom
         style={{
           ...scoreToPos[doom],

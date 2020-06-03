@@ -4,14 +4,12 @@ import { styled, Grid } from "@material-ui/core";
 import { useDrop } from "react-dnd";
 import { Fate, FateVal } from "./Fate";
 import { CardIndex, GameState } from "../hooks/use-game";
-import { BaseCard } from "./BaseCard";
+import { BaseCard, BaseCardProps } from "./BaseCard";
 import { onLongPress } from "../../../services/long-press";
 
-export interface CardProps {
+export interface CardProps extends BaseCardProps {
   index: CardIndex | "hours";
-  card: CardClass;
   acceptsDrop?: ("power" | "fate")[];
-  showPower?: boolean;
   recentlyPlayed?: GameState["recentlyPlayed"];
   onClick?: (card: CardClass) => any;
   onDropFate?: (val: DropFate) => any;
@@ -20,7 +18,7 @@ export interface CardProps {
 
 export const Card: FC<CardProps> = (props) => {
   const { index, card, acceptsDrop = [], onClick, showPower = false } = props;
-  const { onDropFate, onDropPower, recentlyPlayed } = props;
+  const { onDropFate, onDropPower, recentlyPlayed, transition } = props;
   const [{ canDrop }, drop] = useDrop({
     accept: ["fate", "power"],
     canDrop: (item: DropFate | DropPower) => acceptsDrop.includes(item.type),
@@ -54,6 +52,7 @@ export const Card: FC<CardProps> = (props) => {
       card={card}
       showPower={showPower}
       ref={drop}
+      transition={transition}
       style={styles}
       {...onLongPress(() => onClick && onClick(card))}
       onContextMenu={(e) => {

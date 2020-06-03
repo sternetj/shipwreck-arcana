@@ -164,6 +164,7 @@ const Game = () => {
             {deck.length > 0 && (
               <BaseCard
                 card={deck[0]}
+                transition="none"
                 style={{
                   boxShadow: deck
                     .slice(1, 3)
@@ -188,6 +189,7 @@ const Game = () => {
               <Card
                 key={i}
                 index={i}
+                transition="fade"
                 card={cards[i]}
                 recentlyPlayed={
                   i === recentlyPlayed?.source ? recentlyPlayed : undefined
@@ -211,6 +213,7 @@ const Game = () => {
                 display: "flex",
                 flexDirection: "row",
                 flexWrap: "wrap",
+                justifyContent: "center",
                 margin: "10px 0",
               }}>
               {powers.map((power) => (

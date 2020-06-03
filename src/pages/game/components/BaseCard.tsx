@@ -1,18 +1,21 @@
 import React, { ComponentType, useState } from "react";
 import { Card as CardClass } from "../../../services/game";
-import { styled, Grid, Dialog } from "@material-ui/core";
+import { styled, Grid, Dialog, Box } from "@material-ui/core";
 import { useDrag } from "react-dnd";
 import { PowerAdornment } from "./PowerAdornment";
+import { SwitchTransition, CSSTransition } from "react-transition-group";
 
 export interface BaseCardProps {
   card: CardClass;
   showPower?: boolean;
+  transition?: "fade" | "none";
 }
 
 export const BaseCard = React.forwardRef<
   any,
   BaseCardProps & ExtractProps<typeof Img>
->(({ children, card, showPower, ...rest }, ref) => {
+>((props, ref) => {
+  const { children, card, transition = "none", showPower, ...rest } = props;
   const [preview, setPreview] = useState(false);
   const [, drag] = useDrag({
     item: { type: "power", value: card },
@@ -23,18 +26,32 @@ export const BaseCard = React.forwardRef<
     <Card
       innerRef={drag}
       style={{ position: "relative", flexDirection: "column" }}>
-      <Adornments container direction="row" justify="flex-end">
-        {card.attachedPowers.map((p) => (
-          <PowerAdornment card={p} />
-        ))}
-      </Adornments>
-      <Img
-        ref={ref}
-        src={showPower ? card.powerPath : card.cardPath}
-        alt={showPower ? card.power : card.name}
-        onClick={() => setPreview(true)}
-        {...rest}
-      />
+      <SwitchTransition mode="out-in">
+        <CSSTransition
+          key={card.name}
+          enter={transition !== "none"}
+          exit={transition !== "none"}
+          addEndListener={(node, done) =>
+            node.addEventListener("transitionend", done, false)
+          }
+          classNames={transition}>
+          <StyledBox>
+            <Adornments container direction="row" justify="flex-end">
+              {card.attachedPowers.map((p) => (
+                <PowerAdornment card={p} />
+              ))}
+            </Adornments>
+            <Img
+              ref={ref}
+              src={showPower ? card.powerPath : card.cardPath}
+              alt={showPower ? card.power : card.name}
+              onClick={() => setPreview(true)}
+              {...rest}
+            />
+          </StyledBox>
+        </CSSTransition>
+      </SwitchTransition>
+
       {children}
       <Dialog open={preview} onClose={() => setPreview(false)}>
         <img
@@ -67,4 +84,26 @@ const Adornments = styled(Grid)({
 const Card = styled(Grid)({
   position: "relative",
   cursor: "pointer",
+});
+
+const StyledBox = styled(Box)({
+  minWidth: 147,
+  width: "18.56vh",
+  "&.fade-enter": {
+    opacity: 0,
+    transform: "translateY(24px)",
+  },
+  "&.fade-exit": {
+    opacity: 1,
+  },
+  "&.fade-enter-active": {
+    opacity: 1,
+    transform: "translateY(0)",
+  },
+  "&.fade-exit-active": {
+    opacity: 0,
+  },
+  "&.fade-enter-active, &.fade-exit-active": {
+    transition: "all 450ms",
+  },
 });

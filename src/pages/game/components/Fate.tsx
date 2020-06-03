@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { styled } from "@material-ui/core";
+import { styled, Fade } from "@material-ui/core";
 import { useDrag } from "react-dnd";
 import { CardIndex } from "../hooks/use-game";
 import { onLongPress } from "../../../services/long-press";
@@ -17,20 +17,31 @@ export const Fate: FC<Props> = (props) => {
     canDrag: !!source,
   });
   const handler = onClick || (() => {});
+
   return (
-    <Tile
-      ref={drag}
-      {...onLongPress(handler)}
-      onContextMenu={(e) => {
-        handler();
-        e.preventDefault();
-      }}
-      style={{
-        background: `url('pieces/fates.png') ${tileToSprite[value]}`,
-        boxShadow: highlight ? "0px 0px 4px 3px #2d9966" : undefined,
-        ...styles,
-      }}
-    />
+    <>
+      <Fade
+        in={true}
+        timeout={{
+          appear: 0,
+          enter: 350,
+          exit: 350,
+        }}>
+        <Tile
+          ref={drag}
+          {...onLongPress(handler)}
+          onContextMenu={(e) => {
+            handler();
+            e.preventDefault();
+          }}
+          style={{
+            background: `url('pieces/fates.png') ${tileToSprite[value]}`,
+            boxShadow: highlight ? "0px 0px 4px 3px #2d9966" : undefined,
+            ...styles,
+          }}
+        />
+      </Fade>
+    </>
   );
 };
 

@@ -1,5 +1,12 @@
 import React, { FC, useState } from "react";
-import { Grid, Button, Typography, Divider, styled } from "@material-ui/core";
+import {
+  Grid,
+  Button,
+  Typography,
+  Divider,
+  styled,
+  Slide,
+} from "@material-ui/core";
 import { Card } from "../../../services/game";
 import { BaseCard } from "./BaseCard";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -27,7 +34,9 @@ export const ActivePowersRow: FC<Props> = (props) => {
         )}
         <Grid item container justify="center" style={{ margin: "10px 0" }}>
           {powers.map((power) => (
-            <BaseCard key={power.name} card={power} showPower />
+            <Slide in={true} direction="left" exit={false} enter={true}>
+              <BaseCard key={power.name} card={power} showPower />
+            </Slide>
           ))}
         </Grid>
         {!!powers.length && (

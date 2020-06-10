@@ -2,7 +2,6 @@ path /{gameId} {
   read() { true }
 }
 
-// All individual Posts are writable by anyone.
 path /{gameId} is Game {
   validate() { gameId.length <= 31 }
   write() { true }
@@ -34,6 +33,7 @@ type Card {
   fates: Fate[] | Null,
   name: CardName,
   power: Power,
+  fadesAt: Number | Null,
   attachedPowers: BaseCard[] | Null,
 }
 

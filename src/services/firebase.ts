@@ -1,14 +1,14 @@
 import * as firebase from "firebase";
 import { v4 as uuid } from "uuid";
-import { helpers } from "faker";
 import {
   uniqueNamesGenerator,
   adjectives,
   animals,
-  names,
+  colors,
 } from "unique-names-generator";
 import { cards } from "./game/cards";
 import { TokenColor } from "../pages/game/components/token";
+import { shuffle } from "./shuffle";
 
 const playerId = window.localStorage.getItem("playerId") || uuid();
 window.localStorage.setItem("playerId", playerId);
@@ -30,7 +30,7 @@ const databaseRef = db.ref();
 
 export const generateGameName = () =>
   uniqueNamesGenerator({
-    dictionaries: [adjectives, [...names, ...animals]],
+    dictionaries: [[...adjectives, ...colors], animals],
     separator: "-",
     style: "lowerCase",
     length: 2,
@@ -43,7 +43,7 @@ export const createGame = (
   color: TokenColor = "green",
 ) => {
   const ref = databaseRef.child(gameId);
-  const deck = helpers.shuffle(cards);
+  const deck = shuffle(cards);
   const activeCards = {
     1: deck.shift(),
     2: deck.shift(),
@@ -64,7 +64,7 @@ export const createGame = (
         tokens: defaultTokens,
       },
     },
-    fates: helpers.shuffle(fates),
+    fates: shuffle(fates),
     doom: 0,
     points: 0,
   });

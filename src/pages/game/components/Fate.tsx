@@ -36,7 +36,7 @@ export const Fate: FC<Props> = (props) => {
           }}
           style={{
             background: `url('pieces/fates.png') ${tileToSprite[value]}`,
-            boxShadow: highlight ? "0px 0px 4px 3px #2d9966" : undefined,
+            boxShadow: highlight ? "0px 0px 3px 2px #2d9966" : undefined,
             ...styles,
           }}
         />

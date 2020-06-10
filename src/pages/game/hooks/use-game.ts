@@ -3,8 +3,8 @@ import { getGame, fates, defaultTokens } from "../../../services/firebase";
 import { Card, cards } from "../../../services/game";
 import { FateVal } from "../components/Fate";
 import { DropFate, DropPower } from "../components/Card";
-import { helpers } from "faker";
 import { TokenColor } from "../components/token";
+import { shuffle } from "../../../services/shuffle";
 
 export function useGame(id: string) {
   const ref = getGame(id);
@@ -24,7 +24,7 @@ export function useGame(id: string) {
     cardToFade.attachedPowers = [];
 
     if (value.deck.length === 0) {
-      value.deck = helpers.shuffle(value.discard);
+      value.deck = shuffle(value.discard);
       value.discard = [];
     }
 
@@ -37,7 +37,7 @@ export function useGame(id: string) {
       fates: (value.fates || []).concat(discardFates),
       cards: {
         ...value.cards,
-        [index]: newCard,
+        [index]: newCard || null,
       },
     });
   };
@@ -118,7 +118,7 @@ export function useGame(id: string) {
     const current = value.players[playerId];
     current.fates = current.fates || [];
     current.revealed = null as any;
-    value.fates = helpers.shuffle(value.fates || []);
+    value.fates = shuffle(value.fates || []);
 
     if (value.fates?.length === 0) {
       alert("Bag is empty");
@@ -174,7 +174,7 @@ export function useGame(id: string) {
     }
 
     if ((value.deck || []).length === 0) {
-      value.deck = helpers.shuffle(value.discard);
+      value.deck = shuffle(value.discard);
       value.discard = [];
     }
 
@@ -229,7 +229,7 @@ export function useGame(id: string) {
   const newGame = () => {
     if (!value) return;
 
-    const deck = helpers.shuffle(cards);
+    const deck = shuffle(cards);
     const activeCards = {
       1: deck.shift(),
       2: deck.shift(),
@@ -253,7 +253,7 @@ export function useGame(id: string) {
       players: value.players,
       discard: [],
       cards: activeCards,
-      fates: helpers.shuffle(fates),
+      fates: shuffle(fates),
       doom: 0,
       points: 0,
     });

@@ -11,6 +11,7 @@ export interface CardProps extends BaseCardProps {
   index: CardIndex | "hours";
   acceptsDrop?: ("power" | "fate")[];
   recentlyPlayed?: GameState["recentlyPlayed"];
+  canFade?: boolean;
   onClick?: (card: CardClass) => any;
   onDropFate?: (val: DropFate) => any;
   onDropPower?: (val: DropPower) => any;
@@ -19,6 +20,7 @@ export interface CardProps extends BaseCardProps {
 export const Card: FC<CardProps> = (props) => {
   const { index, card, acceptsDrop = [], onClick, showPower = false } = props;
   const { onDropFate, onDropPower, recentlyPlayed, transition } = props;
+  const { canFade = true } = props;
   const [{ canDrop }, drop] = useDrop({
     accept: ["fate", "power"],
     canDrop: (item: DropFate | DropPower) => acceptsDrop.includes(item.type),
@@ -35,10 +37,21 @@ export const Card: FC<CardProps> = (props) => {
     }),
   });
 
+  let title = "";
   let styles: React.CSSProperties = {};
   if (canDrop) {
     styles = {
       boxShadow: "0px 0px 6px 6px lightskyblue",
+    };
+  } else if (canFade && card.fadesAt === null) {
+    title = "This card may fade";
+    styles = {
+      boxShadow: "0px 0px 5px 3px #ab9f00",
+    };
+  } else if (canFade && card.willFade) {
+    title = "This card will fade";
+    styles = {
+      boxShadow: "0px 0px 5px 3px #cd3133",
     };
   }
 
@@ -54,6 +67,7 @@ export const Card: FC<CardProps> = (props) => {
       ref={drop}
       transition={transition}
       style={styles}
+      title={title}
       {...onLongPress(() => onClick && onClick(card))}
       onContextMenu={(e) => {
         if (onClick) {

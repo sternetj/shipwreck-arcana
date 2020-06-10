@@ -11,12 +11,7 @@ export function useGame(id: string) {
   const [raw, loading] = useObjectVal<GameState>(ref);
   const value = deserializeGame(raw);
 
-  const updateScore = (points: Score) => {
-    if (!value) return;
-    const snapshot = createSnapshot(value);
-
-    ref.update({ snapshot, ...points });
-  };
+  const updateScore = (points: Score) => ref.update({ ...points });
 
   const fadeCard = (index: CardIndex) => {
     if (!value) return;
@@ -310,6 +305,8 @@ export function useGame(id: string) {
 
     ref.set({
       ...oldState,
+      points: value.points,
+      doom: value.doom,
       players: mergedPlayers,
     });
   };

@@ -12,6 +12,7 @@ import {
   DialogProps,
   Link,
 } from "@material-ui/core";
+import { ArrowRight } from "@material-ui/icons";
 import { ShareLink } from "../../../../components/ShareLink";
 import { Fate } from "../Fate";
 import { Token } from "../token";
@@ -42,6 +43,20 @@ export const HowToPlayModal: FC<Props> = ({ gameId, ...dialogProps }) => {
             Click on a card to view it full screen or right-click (long press)
             it to perform an action <CardImg src={sampleCard.cardPath} />
           </ListItem>
+          <List dense style={{ marginLeft: 16, marginTop: -16 }}>
+            <ListItem>
+              <ArrowRight /> Cards outlined in <Blue>blue</Blue> mean a fate can
+              be played there
+            </ListItem>
+            <ListItem>
+              <ArrowRight /> Cards outlined in <Yellow>yellow</Yellow> mean the
+              card may fade this turn
+            </ListItem>
+            <ListItem>
+              <ArrowRight /> Cards outlined in <Red>red</Red> mean the card will
+              fade this turn
+            </ListItem>
+          </List>
           <ListItem style={{ display: "inline-block" }}>
             Click a token{" "}
             <Inline>
@@ -101,5 +116,14 @@ const Inline = styled(Box)({
     cursor: "default",
   },
 });
+
+const ColoredText = styled("span")({
+  fontWeight: "bold",
+  display: "inline-block",
+  margin: "0 4px",
+});
+const Blue = styled(ColoredText)({ color: "lightskyblue" });
+const Red = styled(ColoredText)({ color: "#cd3133" });
+const Yellow = styled(ColoredText)({ color: "#ab9f00" });
 
 const sampleCard = new Card("the-blind-man");

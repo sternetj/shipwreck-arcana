@@ -33,7 +33,7 @@ export const TokenRow: FC<Props> = (props) => {
           />
         ))}
       </Grid>
-      <Grid item container justify="center" alignItems="center">
+      <FateRow item container justify="center" alignItems="center">
         {!!name && <Typography style={{ marginRight: 8 }}>{name}</Typography>}
         {tokens.map((f, index) =>
           index === revealedIndex ? (
@@ -48,12 +48,16 @@ export const TokenRow: FC<Props> = (props) => {
             <Tile />
           ),
         )}
-      </Grid>
+      </FateRow>
     </Grid>
   );
 };
 
 const tokenVals: FateVal[] = [1, 2, 3, 4, 5, 6, 7];
+
+const FateRow = styled(Grid)({
+  height: 41,
+});
 
 const Tile = styled("div")({
   width: 24,

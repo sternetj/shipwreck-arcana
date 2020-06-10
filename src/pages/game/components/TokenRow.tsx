@@ -21,7 +21,7 @@ export const TokenRow: FC<Props> = (props) => {
       container
       alignItems="center"
       direction="column"
-      style={{ maxWidth: 333 }}>
+      style={{ maxWidth: 357 }}>
       <Grid item container justify="center">
         {tokenVals.map((f) => (
           <Token
@@ -33,22 +33,24 @@ export const TokenRow: FC<Props> = (props) => {
           />
         ))}
       </Grid>
-      <FateRow item container justify="center" alignItems="center">
-        {!!name && <Typography style={{ marginRight: 8 }}>{name}</Typography>}
-        {tokens.map((f, index) =>
-          index === revealedIndex ? (
-            <Fate
-              num={f}
-              styles={{
-                margin: 2,
-                transform: "scale(0.65)",
-              }}
-            />
-          ) : (
-            <Tile />
-          ),
-        )}
-      </FateRow>
+      {!!name && (
+        <FateRow item container justify="center" alignItems="center">
+          <Typography style={{ marginRight: 8 }}>{name}</Typography>
+          {tokens.map((f, index) =>
+            index === revealedIndex ? (
+              <Fate
+                num={f}
+                styles={{
+                  margin: 2,
+                  transform: "scale(0.65)",
+                }}
+              />
+            ) : (
+              <Tile />
+            ),
+          )}
+        </FateRow>
+      )}
     </Grid>
   );
 };

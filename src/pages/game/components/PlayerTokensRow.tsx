@@ -16,7 +16,7 @@ export const PlayerTokensRow: FC<Props> = (props) => {
           key={color}
           flex={1}
           maxWidth={390}
-          minWidth={333}
+          minWidth={357}
           justifyContent="center"
           display="flex">
           <TokenRow

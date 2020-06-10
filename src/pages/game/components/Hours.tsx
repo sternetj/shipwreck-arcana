@@ -64,23 +64,23 @@ const scoreToPos: { [k: number]: React.CSSProperties } = {
   },
   1: {
     left: "calc(100% - 20px)",
-    top: "calc(max(12.5vh, 85px) + 24px - 15px)",
+    top: "calc(13.5rem / 2 + 24px - 15px)",
   },
   2: {
     left: "calc(100% - 20px)",
-    top: "calc(max(25vh, 170px) + 24px - 10px)",
+    top: "calc(13.5rem + 24px - 10px)",
   },
   3: {
     left: "calc(50% - 15px)",
-    top: "calc(max(25vh, 170px) + 24px + 5px)",
+    top: "calc(13.5rem + 24px + 5px)",
   },
   4: {
     left: -10,
-    top: "calc(max(25vh, 170px) + 24px - 10px)",
+    top: "calc(13.5rem + 24px - 10px)",
   },
   5: {
     left: -10,
-    top: "calc(max(12.5vh, 85px) + 24px - 15px)",
+    top: "calc(13.5rem / 2 + 24px - 15px)",
   },
   6: {
     left: -10,

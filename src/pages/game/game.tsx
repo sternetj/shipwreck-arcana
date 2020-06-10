@@ -75,10 +75,11 @@ const Game = () => {
   const { playedOnHours, recentlyPlayed, activePowers } = value;
   const spectator = !players[playerId];
   const canJoin = Object.keys(players).length < 5;
-  const { fates = [], tokens = [], color } = players[playerId] || {};
+  const { fates = [], tokens = [], color, revealed } = players[playerId] || {};
   const score = { points, doom };
   const sortedPlayers = sortPlayers(players, playerId);
   const otherTokens = sortedPlayers.map(({ value }) => value);
+  const revealedFateIndex = fates.indexOf(revealed!);
 
   const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
     if (spectator) return;
@@ -221,10 +222,11 @@ const Game = () => {
             justify="center"
             alignItems="center"
             style={{ padding: "2rem 0" }}>
-            {fates.map((f) => (
+            {fates.map((f, fIndex) => (
               <Fate
                 key={f}
                 num={f}
+                highlight={revealedFateIndex === fIndex}
                 source={playerId}
                 onClick={() => setFateToReveal(f)}
               />

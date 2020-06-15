@@ -21,7 +21,7 @@ export const BaseCard = React.forwardRef<
   const { children, card, transition = "none", showPower, ...rest } = props;
   const { onLongPress, ...imgProps } = rest;
   const [preview, setPreview] = useState(false);
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, dragPreview] = useDrag({
     item: { type: "power", value: card },
     canDrag: card.canAttach && showPower,
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
@@ -31,7 +31,10 @@ export const BaseCard = React.forwardRef<
 
   return (
     <Card
-      innerRef={drag}
+      innerRef={(inst) => {
+        drag(inst);
+        dragPreview(inst);
+      }}
       style={{ position: "relative", flexDirection: "column" }}>
       <SwitchTransition mode="out-in">
         <CSSTransition

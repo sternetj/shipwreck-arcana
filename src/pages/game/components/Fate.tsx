@@ -13,7 +13,7 @@ interface Props {
 }
 export const Fate: FC<Props> = (props) => {
   const { num: value, source, styles, onClick, highlight } = props;
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, dragPreview] = useDrag({
     item: { type: "fate", value, source },
     canDrag: !!source,
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
@@ -32,7 +32,10 @@ export const Fate: FC<Props> = (props) => {
           exit: 350,
         }}>
         <Tile
-          ref={drag}
+          ref={(inst) => {
+            drag(inst);
+            dragPreview(inst);
+          }}
           {...longPressProps}
           onContextMenu={(e) => {
             handler();

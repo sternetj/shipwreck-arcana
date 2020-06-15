@@ -3,6 +3,7 @@ import { styled, Fade } from "@material-ui/core";
 import { useDrag } from "react-dnd";
 import { CardIndex } from "../hooks/use-game";
 import { useLongPress } from "./hooks/use-long-press";
+import { useDragScroll } from "./hooks/use-drag-scroll";
 interface Props {
   num: FateVal;
   source?: CardIndex | string;
@@ -19,6 +20,7 @@ export const Fate: FC<Props> = (props) => {
   });
   const handler = onClick || (() => {});
   const longPressProps = useLongPress(handler, !isDragging);
+  useDragScroll(isDragging);
 
   return (
     <>

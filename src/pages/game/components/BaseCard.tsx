@@ -5,6 +5,7 @@ import { useDrag } from "react-dnd";
 import { PowerAdornment } from "./PowerAdornment";
 import { SwitchTransition, CSSTransition } from "react-transition-group";
 import { useLongPress } from "./hooks/use-long-press";
+import { useDragScroll } from "./hooks/use-drag-scroll";
 
 export interface BaseCardProps {
   card: CardClass;
@@ -26,6 +27,7 @@ export const BaseCard = React.forwardRef<
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
   const longPress = useLongPress(onLongPress, !isDragging);
+  useDragScroll(isDragging);
 
   return (
     <Card

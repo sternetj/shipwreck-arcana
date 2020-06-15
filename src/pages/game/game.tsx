@@ -46,12 +46,21 @@ const Game = () => {
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
   const { loading, discardFate, flipToken, attachPower, leaveGame } = game;
   const { revealFate, newGame, removeActivePowers, undoAction } = game;
+  const numberOfPlayers = Object.keys(value?.players || {}).length;
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") {
-      window.onbeforeunload = () => leaveGame(playerId);
+    if (process.env.NODE_ENV !== "production") {
+      window.onbeforeunload = (e: BeforeUnloadEvent) => {
+        if (numberOfPlayers > 1) {
+          e.preventDefault();
+          e.returnValue = "Are you sure you want to leave the game?";
+        }
+      };
+      window.onunload = () => {
+        leaveGame(playerId);
+      };
     }
-  }, [leaveGame, playerId]);
+  }, [leaveGame, playerId, numberOfPlayers]);
 
   if (!loading && !value) {
     return (

@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import { styled, Fade } from "@material-ui/core";
 import { useDrag } from "react-dnd";
 import { CardIndex } from "../hooks/use-game";
-import { onLongPress } from "../../../services/long-press";
+import { useLongPress } from "./hooks/use-long-press";
 interface Props {
   num: FateVal;
   source?: CardIndex | string;
@@ -12,11 +12,13 @@ interface Props {
 }
 export const Fate: FC<Props> = (props) => {
   const { num: value, source, styles, onClick, highlight } = props;
-  const [, drag] = useDrag({
+  const [{ isDragging }, drag] = useDrag({
     item: { type: "fate", value, source },
     canDrag: !!source,
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
   const handler = onClick || (() => {});
+  const longPressProps = useLongPress(handler, !isDragging);
 
   return (
     <>
@@ -29,7 +31,7 @@ export const Fate: FC<Props> = (props) => {
         }}>
         <Tile
           ref={drag}
-          {...onLongPress(handler)}
+          {...longPressProps}
           onContextMenu={(e) => {
             handler();
             e.preventDefault();

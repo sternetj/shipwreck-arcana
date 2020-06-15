@@ -29,11 +29,7 @@ type Game {
   snapshot: String | Null,
 }
 
-type Card {
-  fates: Fate[] | Null,
-  name: CardName,
-  power: Power,
-  fadesAt: Number | Null,
+type Card extends BaseCard {
   attachedPowers: BaseCard[] | Null,
 }
 
@@ -43,8 +39,10 @@ type Recent {
 }
 
 type BaseCard {
+  fates: Fate[] | Null,
   name: CardName,
   power: Power,
+  fadesAt: Number | Null,
 }
 
 type Player {

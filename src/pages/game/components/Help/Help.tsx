@@ -9,6 +9,9 @@ import { HowToPlayModal } from "./HowToPlayModal";
 import { ExitGameModal } from "./ExitGameModal";
 import { NewGameModal } from "./NewGameModal";
 import { ConfirmDialog } from "../ConfirmDialog";
+import { isMobile as checkIsMobile } from "is-mobile";
+
+const isMobile = checkIsMobile();
 
 interface Props {
   gameId: string;
@@ -33,7 +36,7 @@ export const Help: FC<Props> = (props) => {
           right: 0,
           top: 0,
           display: "flex",
-          flexDirection: "column",
+          flexDirection: isMobile ? "row" : "column",
         }}>
         <IconButton
           title="Help"

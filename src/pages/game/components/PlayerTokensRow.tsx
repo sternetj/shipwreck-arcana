@@ -1,7 +1,10 @@
 import React, { FC } from "react";
-import { Grid, Box } from "@material-ui/core";
+import { Grid, Box, styled } from "@material-ui/core";
 import { Player } from "../hooks/use-game";
 import { TokenRow } from "./TokenRow";
+import { isMobile as checkIsMobile } from "is-mobile";
+
+const isMobile = checkIsMobile();
 
 interface Props {
   tokens: Player[];
@@ -10,7 +13,7 @@ export const PlayerTokensRow: FC<Props> = (props) => {
   const { tokens } = props;
 
   return (
-    <Grid item container justify="center" style={{ padding: "2rem 48px" }}>
+    <Container item container justify="center">
       {tokens.map(({ tokens: ots, playerName, color, fates, revealed }, i) => (
         <Box
           key={color}
@@ -28,6 +31,10 @@ export const PlayerTokensRow: FC<Props> = (props) => {
           />
         </Box>
       ))}
-    </Grid>
+    </Container>
   );
 };
+
+const Container = styled(Grid)({
+  padding: `${isMobile ? 3 : 2}rem 48px 2rem`,
+});

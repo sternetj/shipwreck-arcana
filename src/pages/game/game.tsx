@@ -21,7 +21,6 @@ import { SpectatorModal } from "./components/SpectatorModal";
 import { TurnOrder } from "./components/TurnOrder";
 import { opponentColors } from "../../services/firebase";
 import { isMobile as checkIsMobile } from "is-mobile";
-import { onLongPress } from "../../services/long-press";
 import { ActivePowersRow } from "./components/ActivePowersRow";
 import { PlayerTokensRow } from "./components/PlayerTokensRow";
 
@@ -49,7 +48,7 @@ const Game = () => {
   const numberOfPlayers = Object.keys(value?.players || {}).length;
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV === "production") {
       window.onbeforeunload = (e: BeforeUnloadEvent) => {
         if (numberOfPlayers > 1) {
           e.preventDefault();
@@ -214,7 +213,7 @@ const Game = () => {
                   key={power.name}
                   card={power}
                   showPower
-                  {...onLongPress(() => !spectator && setPowerToPlay(power))}
+                  onLongPress={() => !spectator && setPowerToPlay(power)}
                   onContextMenu={(e) => {
                     if (spectator) return;
 

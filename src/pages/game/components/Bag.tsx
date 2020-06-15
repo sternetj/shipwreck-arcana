@@ -20,7 +20,6 @@ export const Bag: FC<Props> = ({ onClick, onDropFate }) => {
   if (canDrop) {
     styles = {
       filter: "drop-shadow(0px 0px 6px lightskyblue)",
-      " -webkit-filter": "drop-shadow(0px 0px 6px lightskyblue)",
     };
   }
 

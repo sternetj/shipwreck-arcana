@@ -4,11 +4,13 @@ import { styled, Grid, Dialog, Box } from "@material-ui/core";
 import { useDrag } from "react-dnd";
 import { PowerAdornment } from "./PowerAdornment";
 import { SwitchTransition, CSSTransition } from "react-transition-group";
+import { useLongPress } from "./hooks/use-long-press";
 
 export interface BaseCardProps {
   card: CardClass;
   showPower?: boolean;
   transition?: "fade" | "none";
+  onLongPress?: Function;
 }
 
 export const BaseCard = React.forwardRef<
@@ -16,11 +18,14 @@ export const BaseCard = React.forwardRef<
   BaseCardProps & ExtractProps<typeof Img>
 >((props, ref) => {
   const { children, card, transition = "none", showPower, ...rest } = props;
+  const { onLongPress, ...imgProps } = rest;
   const [preview, setPreview] = useState(false);
-  const [, drag] = useDrag({
+  const [{ isDragging }, drag] = useDrag({
     item: { type: "power", value: card },
     canDrag: card.canAttach && showPower,
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
+  const longPress = useLongPress(onLongPress, !isDragging);
 
   return (
     <Card
@@ -46,7 +51,8 @@ export const BaseCard = React.forwardRef<
               src={showPower ? card.powerPath : card.cardPath}
               alt={showPower ? card.power : card.name}
               onClick={() => setPreview(true)}
-              {...rest}
+              {...longPress}
+              {...imgProps}
             />
           </StyledBox>
         </CSSTransition>

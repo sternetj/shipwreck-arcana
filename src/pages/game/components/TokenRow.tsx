@@ -39,6 +39,7 @@ export const TokenRow: FC<Props> = (props) => {
           {tokens.map((f, index) =>
             index === revealedIndex ? (
               <Fate
+                key={index}
                 num={f}
                 styles={{
                   margin: 2,
@@ -46,7 +47,7 @@ export const TokenRow: FC<Props> = (props) => {
                 }}
               />
             ) : (
-              <Tile />
+              <Tile key={index} />
             ),
           )}
         </FateRow>

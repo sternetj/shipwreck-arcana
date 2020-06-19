@@ -5,6 +5,9 @@ import React, {
   useCallback,
 } from "react";
 import ReactDOM from "react-dom";
+import { isMobile as checkIsMobile } from "is-mobile";
+
+const isMobile = checkIsMobile();
 
 const defaultBorderColor = "#0f0";
 const defaultBorderStyle = "solid";
@@ -68,16 +71,30 @@ export const SteppedLineTo: React.FC<SteppedLineProps> = (props) => {
   const { from, to, offset = 15, ...lineProps } = props;
   const { borderWidth = 0 } = lineProps;
 
-  const { x: x0, y: y0 } = useAnchor(from);
+  let { x: x0, y: y0, width } = useAnchor(from);
   const { x: x1, y: y1 } = useAnchor(to);
 
   if ((!x0 && !y0) || (!x1 && !y1)) return null;
+
+  const origX = x0;
+  const origY = y0;
+
+  if (isMobile) {
+    x0 -= width / 2 + 24;
+    y0 += 12;
+  }
 
   const shift = borderWidth;
   const y2 = y1 + offset - borderWidth;
 
   return (
     <>
+      {isMobile && (
+        <Line {...lineProps} x0={origX} y0={origY} x1={origX} y1={origY + 12} />
+      )}
+      {isMobile && (
+        <Line {...lineProps} x0={origX} y0={origY + 12} x1={x0} y1={y0} />
+      )}
       <Line {...lineProps} x0={x0} y0={y0} x1={x0} y1={y2} />
       <Line {...lineProps} x0={x0 - shift} y0={y2} x1={x1 + shift} y1={y2} />
       <Line {...lineProps} x0={x1} y0={y2} x1={x1} y1={y1} />
@@ -86,7 +103,7 @@ export const SteppedLineTo: React.FC<SteppedLineProps> = (props) => {
 };
 
 const useAnchor = (className: string) => {
-  const [state, setState] = useState({ x: 0, y: 0 });
+  const [state, setState] = useState({ x: 0, y: 0, width: 0 });
   const [el, setElement] = useState<Element | undefined>(
     document.getElementsByClassName(className)[0],
   );
@@ -121,7 +138,7 @@ const useAnchor = (className: string) => {
     const x = left + width * anchor.x + offsetX;
     const y = top + height * anchor.y + offsetY;
 
-    setState({ x, y });
+    setState({ x, y, width });
   }, [el, update]);
 
   return state;

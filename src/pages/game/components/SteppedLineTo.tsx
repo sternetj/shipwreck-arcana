@@ -65,10 +65,11 @@ type SteppedLineProps = Omit<LineProps, "x0" | "y0" | "x1" | "y1"> & {
   from: string;
   to: string;
   offset?: number;
+  fromPadding?: number;
 };
 
 export const SteppedLineTo: React.FC<SteppedLineProps> = (props) => {
-  const { from, to, offset = 15, ...lineProps } = props;
+  const { from, to, offset = 15, fromPadding = 24, ...lineProps } = props;
   const { borderWidth = 0 } = lineProps;
 
   let { x: x0, y: y0, width } = useAnchor(from);
@@ -80,8 +81,8 @@ export const SteppedLineTo: React.FC<SteppedLineProps> = (props) => {
   const origY = y0;
 
   if (isMobile) {
-    x0 -= width / 2 + 24;
-    y0 += 12;
+    x0 -= width / 2 + fromPadding;
+    y0 += fromPadding / 2;
   }
 
   const shift = borderWidth;

@@ -27,6 +27,7 @@ type Game {
   activePowers: Card[] | Null,
   recentlyPlayed: Recent | Null,
   snapshot: String | Null,
+  activePlayer: String | Null,
 }
 
 type Card extends BaseCard {

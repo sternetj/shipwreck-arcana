@@ -11,6 +11,7 @@ import {
   ListSubheader,
   DialogProps,
   Link,
+  Icon,
 } from "@material-ui/core";
 import { ArrowRight } from "@material-ui/icons";
 import { ShareLink } from "../../../../components/ShareLink";
@@ -25,45 +26,11 @@ interface Props extends DialogProps {
 export const HowToPlayModal: FC<Props> = ({ gameId, ...dialogProps }) => {
   return (
     <Dialog {...dialogProps}>
-      <DialogTitle style={{ textAlign: "center" }}>How to Play</DialogTitle>
+      <DialogTitle style={{ textAlign: "center", paddingBottom: 0 }}>
+        How to Play
+      </DialogTitle>
       <DialogContent style={{ padding: "0px 24px 24px 24px" }}>
         <List>
-          <ListItem>
-            You can click the bag to draw a fate <Bag />
-          </ListItem>
-          <ListItem style={{ display: "inline-block" }}>
-            Drag and drop fates{" "}
-            <Inline>
-              <Fate num={3} />
-            </Inline>{" "}
-            onto playable cards or the bag. Right-click or long press to reveal
-            it to the other players.
-          </ListItem>
-          <ListItem>
-            Click on a card to view it full screen or right-click (long press)
-            it to perform an action <CardImg src={sampleCard.cardPath} />
-          </ListItem>
-          <List dense style={{ marginLeft: 16, marginTop: -16 }}>
-            <ListItem>
-              <ArrowRight /> Cards outlined in <Blue>blue</Blue> mean a fate can
-              be played there
-            </ListItem>
-            <ListItem>
-              <ArrowRight /> Cards outlined in <Yellow>yellow</Yellow> mean the
-              card may fade this turn
-            </ListItem>
-            <ListItem>
-              <ArrowRight /> Cards outlined in <Red>red</Red> mean the card will
-              fade this turn
-            </ListItem>
-          </List>
-          <ListItem style={{ display: "inline-block" }}>
-            Click a token{" "}
-            <Inline>
-              <Token num={4} color="blue" />
-            </Inline>{" "}
-            to flip it over
-          </ListItem>
           <ListSubheader disableSticky>Difficulty</ListSubheader>
           <ListItem dense>
             <Grid container direction="row" justify="space-around">
@@ -82,9 +49,9 @@ export const HowToPlayModal: FC<Props> = ({ gameId, ...dialogProps }) => {
             </Grid>
           </ListItem>
           <ListItem>
-            For game specific details please refer to the{" "}
+            For further game specific details please refer to the{" "}
             <Link
-              style={{ marginLeft: 4 }}
+              style={{ marginLeft: 4, textDecoration: "underline" }}
               target="_blank"
               color="textSecondary"
               rel="noopener noreferrer"
@@ -92,8 +59,70 @@ export const HowToPlayModal: FC<Props> = ({ gameId, ...dialogProps }) => {
               Rules
             </Link>
           </ListItem>
+          <ListSubheader disableSticky>Turn Order</ListSubheader>
+          <ListItem dense>
+            Play proceeds in a clock-wise fashion, moving from one player color
+            to the next{" "}
+            <Icon style={{ width: 32, height: 32 }}>
+              <img
+                style={{ height: "100%" }}
+                src="/pieces/turn-order.svg"
+                alt="Turn Order Icon"
+              />
+            </Icon>
+          </ListItem>
+          <ListSubheader disableSticky style={{}}>
+            Player Controls
+          </ListSubheader>
+          <ListItem style={{ paddingTop: 0 }}>
+            You can click the bag to draw a fate <Bag />
+          </ListItem>
+          <ListItem style={{ display: "inline-block" }}>
+            Drag and drop fates{" "}
+            <Inline>
+              <Fate num={3} />
+            </Inline>{" "}
+            onto playable cards or the bag. Right-click (long press) to reveal
+            it to the other players.
+          </ListItem>
+          <ListItem>
+            Click on a card to view it full screen or right-click (long press)
+            it to perform an action <CardImg src={sampleCard.cardPath} />
+          </ListItem>
+          <List dense style={{ marginLeft: 16, marginTop: -16 }}>
+            <ListItem>
+              <ArrowRight />
+              <Box>
+                Cards outlined in <Blue>blue</Blue> mean a fate can be played
+                there while dragging a fate
+              </Box>
+            </ListItem>
+            <ListItem>
+              <ArrowRight />
+              <Box>
+                Cards outlined in <Yellow>yellow</Yellow> mean the card may fade
+                this turn
+              </Box>
+            </ListItem>
+            <ListItem>
+              <ArrowRight />
+              <Box>
+                Cards outlined in <Red>red</Red> mean the card will fade this
+                turn
+              </Box>
+            </ListItem>
+          </List>
+          <ListItem style={{ display: "inline-block" }}>
+            Click a token{" "}
+            <Inline>
+              <Token num={4} color="blue" />
+            </Inline>{" "}
+            to flip it over
+          </ListItem>
+          <ListItem dense>
+            <ShareLink gameId={gameId} />
+          </ListItem>
         </List>
-        <ShareLink gameId={gameId} />
       </DialogContent>
     </Dialog>
   );
@@ -119,8 +148,6 @@ const Inline = styled(Box)({
 
 const ColoredText = styled("span")({
   fontWeight: "bold",
-  display: "inline-block",
-  margin: "0 4px",
 });
 const Blue = styled(ColoredText)({ color: "lightskyblue" });
 const Red = styled(ColoredText)({ color: "#cd3133" });

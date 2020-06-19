@@ -43,6 +43,7 @@ export const createGame = (
   color: TokenColor = "green",
 ) => {
   const ref = databaseRef.child(gameId);
+  const pId = player || playerId;
   const deck = shuffle(cards);
   const activeCards = {
     1: deck.shift(),
@@ -56,8 +57,9 @@ export const createGame = (
     deck,
     discard: [],
     cards: activeCards,
+    activePlayer: pId,
     players: {
-      [`${player || playerId}`]: {
+      [pId]: {
         playerName,
         color,
         fates: [],

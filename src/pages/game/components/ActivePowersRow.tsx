@@ -1,15 +1,9 @@
 import React, { FC, useState } from "react";
-import {
-  Grid,
-  Button,
-  Typography,
-  Divider,
-  styled,
-  Slide,
-} from "@material-ui/core";
+import { Grid, Button, Typography, styled, Fade } from "@material-ui/core";
 import { Card } from "../../../services/game";
 import { BaseCard } from "./BaseCard";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { Divider } from "./Divider";
 
 interface Props {
   powers: Card[];
@@ -30,33 +24,34 @@ export const ActivePowersRow: FC<Props> = (props) => {
           alignItems: "center",
         }}>
         {!!powers.length && (
-          <StyledDivider style={{ marginBottom: -24, marginTop: 22 }} />
+          <Divider style={{ marginBottom: -24, marginTop: 22 }} />
         )}
         <Grid item container justify="center" style={{ margin: "10px 0" }}>
           {powers.map((power) => (
-            <Slide in={true} direction="left" exit={false} enter={true}>
-              <BaseCard key={power.name} card={power} showPower />
-            </Slide>
+            <Fade key={power.name} in appear>
+              <BaseCard card={power} showPower />
+            </Fade>
           ))}
         </Grid>
         {!!powers.length && (
           <>
-            <Typography variant="body1" color="secondary">
-              Active Powers
-              {canClear && (
-                <Button
-                  title="Click to remove active powers"
-                  onClick={() => setOpen(true)}
-                  size="small"
-                  color="primary"
-                  variant="text">
-                  ( Clear )
-                </Button>
-              )}
-            </Typography>
+            <Divider>
+              <StyledText variant="body1" color="secondary">
+                Active Powers
+              </StyledText>
+            </Divider>
+            {canClear && (
+              <Button
+                title="Click to remove active powers"
+                onClick={() => setOpen(true)}
+                size="small"
+                color="primary"
+                variant="text">
+                ( Clear )
+              </Button>
+            )}
           </>
         )}
-        {!!powers.length && <StyledDivider />}
       </Grid>
 
       <ConfirmDialog
@@ -72,10 +67,6 @@ export const ActivePowersRow: FC<Props> = (props) => {
   );
 };
 
-const StyledDivider = styled(Divider)({
-  // alignSelf: "stretch",
-  // margin: "0 auto",
-  marginTop: "-2px",
-  width: "100%",
-  borderBottom: "2px solid rgba(45, 153, 102, 0.24)",
+const StyledText = styled(Typography)({
+  margin: "0 8px",
 });

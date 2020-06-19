@@ -7,30 +7,35 @@ import { isMobile as checkIsMobile } from "is-mobile";
 const isMobile = checkIsMobile();
 
 interface Props {
-  tokens: Player[];
+  tokens: { playerId: string; player: Player }[];
+  activePlayer: string;
 }
 export const PlayerTokensRow: FC<Props> = (props) => {
-  const { tokens } = props;
+  const { tokens, activePlayer } = props;
 
   return (
     <Container item container justify="center">
-      {tokens.map(({ tokens: ots, playerName, color, fates, revealed }, i) => (
-        <Box
-          key={color}
-          flex={1}
-          maxWidth={390}
-          minWidth={357}
-          justifyContent="center"
-          display="flex">
-          <TokenRow
-            color={color}
-            tokens={fates}
-            revealedIndex={fates?.indexOf(revealed as any)}
-            selections={ots}
-            name={playerName}
-          />
-        </Box>
-      ))}
+      {tokens.map(({ playerId, player }, i) => {
+        const { tokens: ots, playerName, color, fates, revealed } = player;
+        return (
+          <Box
+            key={color}
+            flex={1}
+            maxWidth={390}
+            minWidth={357}
+            justifyContent="center"
+            display="flex">
+            <TokenRow
+              color={color}
+              tokens={fates}
+              revealedIndex={fates?.indexOf(revealed as any)}
+              selections={ots}
+              name={playerName}
+              activeTurn={playerId === activePlayer}
+            />
+          </Box>
+        );
+      })}
     </Container>
   );
 };

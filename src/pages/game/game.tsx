@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import qs from "qs";
 import { useLocation, useHistory } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
-import { Grid, CircularProgress } from "@material-ui/core";
+import { Grid, CircularProgress, Button } from "@material-ui/core";
 import { Card } from "./components/Card";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { Hours } from "./components/Hours";
@@ -18,7 +18,6 @@ import { TokenRow } from "./components/TokenRow";
 import { Help } from "./components/Help/Help";
 import { NoGame } from "./components/NoGame";
 import { SpectatorModal } from "./components/SpectatorModal";
-import { TurnOrder } from "./components/TurnOrder";
 import { opponentColors } from "../../services/firebase";
 import { isMobile as checkIsMobile } from "is-mobile";
 import { ActivePowersRow } from "./components/ActivePowersRow";
@@ -44,7 +43,7 @@ const Game = () => {
   const game = useGame(name);
   const { value, updateScore, fadeCard, drawFate, playFate, playPower } = game;
   const { loading, discardFate, flipToken, attachPower, leaveGame } = game;
-  const { revealFate, newGame, removeActivePowers, undoAction } = game;
+  const { revealFate, newGame, removeActivePowers, undoAction, endTurn } = game;
   const numberOfPlayers = Object.keys(value?.players || {}).length;
 
   useEffect(() => {
@@ -74,20 +73,20 @@ const Game = () => {
 
   if (!value)
     return (
-      <Grid container justify="center" style={{ marginTop: "4rem" }}>
+      <Grid container justify="center" style={{ paddingTop: "4rem" }}>
         <CircularProgress color="secondary" size={65} />
       </Grid>
     );
 
   const { points, doom, deck, cards, powers, players } = value;
-  const { playedOnHours, recentlyPlayed, activePowers } = value;
+  const { playedOnHours, recentlyPlayed, activePowers, activePlayer } = value;
   const spectator = !players[playerId];
   const canJoin = Object.keys(players).length < 5;
   const { fates = [], tokens = [], color, revealed } = players[playerId] || {};
   const score = { points, doom };
   const sortedPlayers = sortPlayers(players, playerId);
-  const otherTokens = sortedPlayers.map(({ value }) => value);
   const revealedFateIndex = fates.indexOf(revealed!);
+  const isCurrentTurn = playerId === activePlayer;
 
   const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
     if (spectator) return;
@@ -150,8 +149,12 @@ const Game = () => {
             router.push("/");
           }}
         />
-        <Grid container direction="column" alignItems="center">
-          <PlayerTokensRow tokens={otherTokens} />
+        <Grid
+          container
+          direction="column"
+          alignItems="center"
+          style={{ paddingBottom: 24 }}>
+          <PlayerTokensRow tokens={sortedPlayers} activePlayer={activePlayer} />
           <Grid container item justify="center">
             {deck.length > 0 && (
               <BaseCard
@@ -213,6 +216,7 @@ const Game = () => {
                   key={power.name}
                   card={power}
                   showPower
+                  transition="slide"
                   onLongPress={() => !spectator && setPowerToPlay(power)}
                   onContextMenu={(e) => {
                     if (spectator) return;
@@ -246,11 +250,7 @@ const Game = () => {
               />
             )}
           </Grid>
-          <Grid
-            container
-            item
-            justify="center"
-            style={{ marginBottom: isMobile ? 65 : 0 }}>
+          <Grid container item justify="center">
             <TokenRow
               selections={tokens}
               color={color}
@@ -259,10 +259,18 @@ const Game = () => {
               }
             />
           </Grid>
+          {isCurrentTurn && (
+            <Button
+              title="Click to end your turn"
+              onClick={() => endTurn(playerId)}
+              color="primary"
+              style={{ marginTop: 16 }}
+              variant="contained">
+              End Turn
+            </Button>
+          )}
         </Grid>
       </DndProvider>
-
-      <TurnOrder />
 
       <ConfirmDialog
         prompt="Fade this card?"
@@ -316,8 +324,10 @@ const sortPlayers = (players: GameState["players"], playerId = "") => {
       ([, { color: colorA }], [, { color: colorB }]) =>
         opponentColors.indexOf(colorA) - opponentColors.indexOf(colorB),
     )
-    .map(([key, value]) => ({ key, value }));
-  const indexOfPlayer = sorted.findIndex(({ key }) => key === playerId);
+    .map(([playerId, player]) => ({ playerId, player }));
+  const indexOfPlayer = sorted.findIndex(
+    ({ playerId: key }) => key === playerId,
+  );
 
   if (indexOfPlayer === -1) return sorted;
 

@@ -1,5 +1,10 @@
 import { useObjectVal } from "react-firebase-hooks/database";
-import { getGame, fates, defaultTokens } from "../../../services/firebase";
+import {
+  getGame,
+  fates,
+  defaultTokens,
+  opponentColors,
+} from "../../../services/firebase";
 import { Card, cards } from "../../../services/game";
 import { FateVal } from "../components/Fate";
 import { DropFate, DropPower } from "../components/Card";
@@ -217,9 +222,14 @@ export function useGame(id: string) {
 
     if (Object.keys(value.players).length > 1) {
       const { [playerId]: leaving, ...remainingPlayers } = value.players;
+      const activePlayer =
+        value.activePlayer === playerId
+          ? getNextPlayer(value.players, playerId)
+          : value.activePlayer;
       ref.update({
         snapshot: null,
         players: remainingPlayers,
+        activePlayer,
       });
     } else {
       ref.remove();
@@ -248,6 +258,7 @@ export function useGame(id: string) {
       snapshot: null,
       playedOnHours: null,
       activePowers: [],
+      activePlayer: getNextPlayer(value.players, value.activePlayer),
       powers: [],
       deck,
       players: value.players,
@@ -311,6 +322,16 @@ export function useGame(id: string) {
     });
   };
 
+  const endTurn = (playerId: string) => {
+    if (!value) return;
+    const snapshot = createSnapshot(value);
+
+    ref.update({
+      snapshot,
+      activePlayer: getNextPlayer(value.players, playerId),
+    });
+  };
+
   return {
     loading,
     value,
@@ -327,13 +348,14 @@ export function useGame(id: string) {
     revealFate,
     removeActivePowers,
     undoAction,
+    endTurn,
   };
 }
 
 const deserializeGame = (value: GameState | undefined) =>
   value && {
-    discard: (value.discard || []).map((c) => Card.from(c)),
     ...value,
+    discard: (value.discard || []).map((c) => Card.from(c)),
     deck: (value.deck || []).map((c) => Card.from(c)),
     powers: (value.powers || []).map((c) => Card.from(c)),
     activePowers: (value.activePowers || []).map((c) => Card.from(c)),
@@ -352,6 +374,19 @@ const createSnapshot = (state: GameState | undefined) => {
   return btoa(JSON.stringify(value));
 };
 
+const getNextPlayer = (players: GameState["players"], currentPlayer = "") => {
+  const sorted = Object.entries(players)
+    .sort(
+      ([, { color: colorA }], [, { color: colorB }]) =>
+        opponentColors.indexOf(colorA) - opponentColors.indexOf(colorB),
+    )
+    .map(([key]) => key);
+
+  const nextPlayerIndex = sorted.indexOf(currentPlayer) + 1;
+
+  return sorted.concat(sorted)[nextPlayerIndex];
+};
+
 export interface GameState {
   cards: {
     [index in CardIndex]: Card;
@@ -360,6 +395,7 @@ export interface GameState {
   discard: Card[];
   doom: number;
   fates: FateVal[];
+  activePlayer: string;
   playedOnHours?: FateVal;
   recentlyPlayed?: {
     source: CardIndex;

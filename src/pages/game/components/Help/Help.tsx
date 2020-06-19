@@ -3,7 +3,7 @@ import { IconButton, Grid } from "@material-ui/core";
 
 import HelpRounded from "@material-ui/icons/HelpRounded";
 import ExitToApp from "@material-ui/icons/ExitToAppOutlined";
-import Refresh from "@material-ui/icons/Refresh";
+import Sync from "@material-ui/icons/Sync";
 import Undo from "@material-ui/icons/Undo";
 import { HowToPlayModal } from "./HowToPlayModal";
 import { ExitGameModal } from "./ExitGameModal";
@@ -57,7 +57,7 @@ export const Help: FC<Props> = (props) => {
             title="New Game"
             color="inherit"
             onClick={() => setOpen("newGame")}>
-            <Refresh />
+            <Sync />
           </IconButton>
         )}
         <IconButton

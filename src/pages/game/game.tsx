@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import qs from "qs";
 import { useLocation, useHistory } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
-import { Grid, CircularProgress, Button } from "@material-ui/core";
+import { Grid, CircularProgress, Button, Slide } from "@material-ui/core";
 import { Card } from "./components/Card";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { Hours } from "./components/Hours";
@@ -87,6 +87,11 @@ const Game = () => {
   const sortedPlayers = sortPlayers(players, playerId);
   const revealedFateIndex = fates.indexOf(revealed!);
   const isCurrentTurn = playerId === activePlayer;
+
+  let recentIndex = -1;
+  if (1 === recentlyPlayed?.source && playedOnHours) {
+    recentIndex = cards[1].fates.lastIndexOf(recentlyPlayed.fate);
+  }
 
   const confirmFade = (slot: 1 | 2 | 3 | 4) => (card: CardClass) => {
     if (spectator) return;
@@ -177,6 +182,7 @@ const Game = () => {
               {...score}
               acceptsDrop={!spectator ? ["fate"] : []}
               playedOnHours={playedOnHours}
+              fateIndex={recentIndex}
               onDropFate={(val) => !spectator && playFate("hours", val)}
               onClick={beginAdjustScore}
             />
@@ -212,19 +218,25 @@ const Game = () => {
                 margin: "10px 0",
               }}>
               {powers.map((power) => (
-                <BaseCard
-                  key={power.name}
-                  card={power}
-                  showPower
-                  transition="slide"
-                  onLongPress={() => !spectator && setPowerToPlay(power)}
-                  onContextMenu={(e) => {
-                    if (spectator) return;
+                <Slide
+                  direction="left"
+                  in
+                  enter
+                  appear
+                  timeout={{ enter: 450 }}>
+                  <BaseCard
+                    key={power.name}
+                    card={power}
+                    showPower
+                    onLongPress={() => !spectator && setPowerToPlay(power)}
+                    onContextMenu={(e) => {
+                      if (spectator) return;
 
-                    setPowerToPlay(power);
-                    e.preventDefault();
-                  }}
-                />
+                      setPowerToPlay(power);
+                      e.preventDefault();
+                    }}
+                  />
+                </Slide>
               ))}
             </Grid>
           </Grid>

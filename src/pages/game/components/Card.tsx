@@ -77,6 +77,7 @@ export const Card: FC<CardProps> = (props) => {
       <FateRow container justify="center">
         {card.fates.map((f, k) => (
           <Fate
+            className={k === recentIndex ? `active-${recentIndex}` : ""}
             key={k}
             num={f as any}
             source={index}

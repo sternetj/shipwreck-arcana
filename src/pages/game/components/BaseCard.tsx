@@ -1,6 +1,6 @@
 import React, { ComponentType, useState } from "react";
 import { Card as CardClass } from "../../../services/game";
-import { styled, Grid, Dialog, Box, Slide } from "@material-ui/core";
+import { styled, Grid, Dialog, Box } from "@material-ui/core";
 import { useDrag } from "react-dnd";
 import { PowerAdornment } from "./PowerAdornment";
 import { SwitchTransition, CSSTransition } from "react-transition-group";
@@ -10,7 +10,7 @@ import { useDragScroll } from "./hooks/use-drag-scroll";
 export interface BaseCardProps {
   card: CardClass;
   showPower?: boolean;
-  transition?: "fade" | "slide" | "none";
+  transition?: "fade" | "none";
   onLongPress?: Function;
 }
 
@@ -29,8 +29,6 @@ export const BaseCard = React.forwardRef<
   const longPress = useLongPress(onLongPress, !isDragging);
   useDragScroll(isDragging);
 
-  const Wrapper = transition === "slide" ? Slide : Box;
-
   return (
     <Card
       innerRef={(inst) => {
@@ -43,27 +41,28 @@ export const BaseCard = React.forwardRef<
           key={card.name}
           enter={transition !== "none"}
           exit={transition !== "none"}
+          timeout={
+            transition === "none" ? { enter: 0, exit: 0, appear: 0 } : undefined
+          }
           addEndListener={(node, done) =>
             node.addEventListener("transitionend", done, false)
           }
           classNames={transition}>
-          <Wrapper direction="left" in enter appear timeout={{ enter: 450 }}>
-            <StyledBox>
-              <Adornments container direction="row" justify="flex-end">
-                {card.attachedPowers.map((p) => (
-                  <PowerAdornment card={p} />
-                ))}
-              </Adornments>
-              <Img
-                ref={ref}
-                src={showPower ? card.powerPath : card.cardPath}
-                alt={showPower ? card.power : card.name}
-                onClick={() => setPreview(true)}
-                {...longPress}
-                {...imgProps}
-              />
-            </StyledBox>
-          </Wrapper>
+          <StyledBox>
+            <Adornments container direction="row" justify="flex-end">
+              {card.attachedPowers.map((p) => (
+                <PowerAdornment card={p} />
+              ))}
+            </Adornments>
+            <Img
+              ref={ref}
+              src={showPower ? card.powerPath : card.cardPath}
+              alt={showPower ? card.power : card.name}
+              onClick={() => setPreview(true)}
+              {...longPress}
+              {...imgProps}
+            />
+          </StyledBox>
         </CSSTransition>
       </SwitchTransition>
 

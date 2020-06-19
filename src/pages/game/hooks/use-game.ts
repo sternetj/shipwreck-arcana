@@ -37,6 +37,7 @@ export function useGame(id: string) {
       snapshot,
       discard: value.discard,
       deck: value.deck,
+      playedOnHours: null,
       recentlyPlayed: null as any,
       powers: (value.powers || []).concat(cardToFade),
       fates: (value.fates || []).concat(discardFates),
@@ -97,6 +98,7 @@ export function useGame(id: string) {
   const discardFate = ({ value: fate, source }: DropFate) => {
     if (!value) return;
     const snapshot = createSnapshot(value);
+    let playedOnHours = value.playedOnHours;
 
     if (typeof source === "string") {
       const current = value.players[source];
@@ -106,6 +108,7 @@ export function useGame(id: string) {
       value.players[source] = current;
     } else {
       value.cards[source].removeFate(fate);
+      playedOnHours = null as any;
     }
 
     ref.update({
@@ -114,6 +117,7 @@ export function useGame(id: string) {
       recentlyPlayed: null as any,
       cards: value.cards,
       players: value.players,
+      playedOnHours,
     });
   };
 
@@ -138,12 +142,12 @@ export function useGame(id: string) {
     ref.update({
       snapshot,
       fates: value.fates,
-      recentlyPlayed: null as any,
+      recentlyPlayed: null,
       players: {
         ...value.players,
         [playerId]: {
           ...current,
-          revealed: null as any,
+          revealed: null,
           fates: current.fates.concat(drawn!),
         },
       },
@@ -325,10 +329,19 @@ export function useGame(id: string) {
   const endTurn = (playerId: string) => {
     if (!value) return;
     const snapshot = createSnapshot(value);
+    const current = value.players[playerId];
 
     ref.update({
       snapshot,
+      playedOnHours: null,
       activePlayer: getNextPlayer(value.players, playerId),
+      players: {
+        ...value.players,
+        [playerId]: {
+          ...current,
+          revealed: null,
+        },
+      },
     });
   };
 

@@ -2,8 +2,8 @@ import React, { FC } from "react";
 import { Card as CardClass } from "../../../services/game";
 import { Card, CardProps } from "./Card";
 import { Grid, styled } from "@material-ui/core";
-import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
-import { FateVal, Fate } from "./Fate";
+import { FateVal } from "./Fate";
+import { SteppedLineTo } from "./SteppedLineTo";
 
 const theHours = new CardClass("the-hours");
 
@@ -11,9 +11,11 @@ type Props = Omit<CardProps, "card" | "index"> & {
   doom: number;
   points: number;
   playedOnHours?: FateVal;
+  fateIndex?: number;
 };
 
-export const Hours: FC<Props> = ({ doom, points, playedOnHours, ...rest }) => {
+export const Hours: FC<Props> = (props) => {
+  const { doom, points, playedOnHours, fateIndex = -1, ...rest } = props;
   const same = doom === points;
   return (
     <Container style={{ alignItems: "center" }}>
@@ -27,11 +29,13 @@ export const Hours: FC<Props> = ({ doom, points, playedOnHours, ...rest }) => {
         }}
       />
       <Points style={scoreToPos[points]} />
-      {!!playedOnHours && (
-        <Grid container justify="flex-end" alignItems="center">
-          <Fate num={playedOnHours} styles={{ opacity: 0.6 }} />
-          <DoubleArrowIcon style={{ opacity: 0.5, color: "#aca02d" }} />
-        </Grid>
+      {!!playedOnHours && fateIndex > -1 && (
+        <SteppedLineTo
+          from="hours"
+          to={`active-${fateIndex}`}
+          borderColor="rgba(172, 160, 45, 0.24)"
+          borderWidth={2}
+        />
       )}
     </Container>
   );

@@ -17,6 +17,8 @@ type Props = Omit<CardProps, "card" | "index"> & {
 export const Hours: FC<Props> = (props) => {
   const { doom, points, playedOnHours, fateIndex = -1, ...rest } = props;
   const same = doom === points;
+  const showLine = !!playedOnHours && fateIndex > -1;
+
   return (
     <Container style={{ alignItems: "center" }}>
       <Card {...rest} index="hours" canFade={false} card={theHours} />
@@ -29,7 +31,7 @@ export const Hours: FC<Props> = (props) => {
         }}
       />
       <Points style={scoreToPos[points]} />
-      {!!playedOnHours && fateIndex > -1 && (
+      {showLine && (
         <SteppedLineTo
           from="hours"
           to={`active-${fateIndex}`}

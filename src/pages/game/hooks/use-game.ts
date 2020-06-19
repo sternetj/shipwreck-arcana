@@ -38,7 +38,7 @@ export function useGame(id: string) {
       discard: value.discard,
       deck: value.deck,
       playedOnHours: null,
-      recentlyPlayed: null as any,
+      recentlyPlayed: null,
       powers: (value.powers || []).concat(cardToFade),
       fates: (value.fates || []).concat(discardFates),
       cards: {
@@ -114,7 +114,7 @@ export function useGame(id: string) {
     ref.update({
       snapshot,
       fates: (value.fates || []).concat(fate),
-      recentlyPlayed: null as any,
+      recentlyPlayed: null,
       cards: value.cards,
       players: value.players,
       playedOnHours,
@@ -191,7 +191,6 @@ export function useGame(id: string) {
       snapshot,
       activePowers: value.activePowers,
       discard: value.discard,
-      recentlyPlayed: null as any,
       deck: value.deck,
       powers: value.powers,
     });
@@ -213,7 +212,6 @@ export function useGame(id: string) {
     ref.update({
       snapshot,
       powers: value.powers,
-      recentlyPlayed: null as any,
       cards: {
         ...value.cards,
         [index]: cardToUpdate,
@@ -280,7 +278,6 @@ export function useGame(id: string) {
     current.revealed = fate;
 
     ref.update({
-      recentlyPlayed: null as any,
       players: {
         ...value.players,
         [playerId]: {

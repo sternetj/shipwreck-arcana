@@ -47,6 +47,7 @@ export const Line: React.FC<LineProps> = (props) => {
     borderTopColor: borderColor || defaultBorderColor,
     borderTopStyle: borderStyle || defaultBorderStyle,
     borderTopWidth: borderWidth || defaultBorderWidth,
+    // borderRadius: borderWidth,
   };
 
   const lineProps = {
@@ -60,10 +61,11 @@ export const Line: React.FC<LineProps> = (props) => {
 type SteppedLineProps = Omit<LineProps, "x0" | "y0" | "x1" | "y1"> & {
   from: string;
   to: string;
+  offset?: number;
 };
 
 export const SteppedLineTo: React.FC<SteppedLineProps> = (props) => {
-  const { from, to, ...lineProps } = props;
+  const { from, to, offset = 15, ...lineProps } = props;
   const { borderWidth = 0 } = lineProps;
 
   const { x: x0, y: y0 } = useAnchor(from);
@@ -71,11 +73,14 @@ export const SteppedLineTo: React.FC<SteppedLineProps> = (props) => {
 
   if ((!x0 && !y0) || (!x1 && !y1)) return null;
 
+  const shift = borderWidth;
+  const y2 = y1 + offset - borderWidth;
+
   return (
     <>
-      <Line {...lineProps} x0={x0} y0={y0} x1={x0} y1={y1 + 20 + borderWidth} />
-      <Line {...lineProps} x0={x0} y0={y1 + 20} x1={x1} y1={y1 + 20} />
-      <Line {...lineProps} x0={x1} y0={y1 + 20 + borderWidth} x1={x1} y1={y1} />
+      <Line {...lineProps} x0={x0} y0={y0} x1={x0} y1={y2} />
+      <Line {...lineProps} x0={x0 - shift} y0={y2} x1={x1 + shift} y1={y2} />
+      <Line {...lineProps} x0={x1} y0={y2} x1={x1} y1={y1} />
     </>
   );
 };

@@ -61,6 +61,7 @@ export const Card: FC<CardProps> = (props) => {
 
   return (
     <BaseCard
+      className={index?.toString()}
       card={card}
       showPower={showPower}
       ref={drop}

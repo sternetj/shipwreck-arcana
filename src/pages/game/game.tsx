@@ -219,13 +219,13 @@ const Game = () => {
               }}>
               {powers.map((power) => (
                 <Slide
+                  key={power.name}
                   direction="left"
                   in
                   enter
                   appear
                   timeout={{ enter: 450 }}>
                   <BaseCard
-                    key={power.name}
                     card={power}
                     showPower
                     onLongPress={() => !spectator && setPowerToPlay(power)}

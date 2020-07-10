@@ -10,6 +10,7 @@ import { ExitGameModal } from "./ExitGameModal";
 import { NewGameModal } from "./NewGameModal";
 import { ConfirmDialog } from "../ConfirmDialog";
 import { isMobile as checkIsMobile } from "is-mobile";
+import ReactGA from "react-ga";
 
 const isMobile = checkIsMobile();
 
@@ -24,9 +25,19 @@ interface Props {
 
 export const Help: FC<Props> = (props) => {
   const { gameId, canControl, canUndo, onNewGame, onUndo, onExitGame } = props;
-  const [open, setOpen] = useState<"howTo" | "exit" | "newGame" | "undo">();
+  const [open, setOpen] = useState<
+    "howTo" | "leave-game" | "new-game" | "undo"
+  >();
 
-  const close = useMemo(() => () => setOpen(undefined), [setOpen]);
+  const close = useMemo(
+    () => (action: string = "cancel") => {
+      setOpen((category) => {
+        category && ReactGA.event({ category, action });
+        return undefined;
+      });
+    },
+    [setOpen],
+  );
 
   return (
     <>
@@ -41,14 +52,20 @@ export const Help: FC<Props> = (props) => {
         <IconButton
           title="Help"
           color="inherit"
-          onClick={() => setOpen("howTo")}>
+          onClick={() => {
+            setOpen("howTo");
+            ReactGA.event({ category: "howTo", action: "open" });
+          }}>
           <HelpRounded />
         </IconButton>
         {canControl && canUndo && (
           <IconButton
             title="Undo"
             color="inherit"
-            onClick={() => setOpen("undo")}>
+            onClick={() => {
+              setOpen("undo");
+              ReactGA.event({ category: "undo", action: "initiate" });
+            }}>
             <Undo />
           </IconButton>
         )}
@@ -56,33 +73,46 @@ export const Help: FC<Props> = (props) => {
           <IconButton
             title="New Game"
             color="inherit"
-            onClick={() => setOpen("newGame")}>
+            onClick={() => {
+              setOpen("new-game");
+              ReactGA.event({ category: "new-game", action: "initiate" });
+            }}>
             <Sync />
           </IconButton>
         )}
         <IconButton
           title="Leave Game"
           color="inherit"
-          onClick={() => setOpen("exit")}>
+          onClick={() => {
+            setOpen("leave-game");
+            ReactGA.event({ category: "leave-game", action: "initiate" });
+          }}>
           <ExitToApp />
         </IconButton>
       </Grid>
 
-      <HowToPlayModal gameId={gameId} open={open === "howTo"} onClose={close} />
+      <HowToPlayModal
+        gameId={gameId}
+        open={open === "howTo"}
+        onClose={() => close("close")}
+      />
 
       <NewGameModal
-        open={open === "newGame" && canControl}
+        open={open === "new-game" && canControl}
         onNewGame={() => {
           onNewGame();
-          close();
+          close("confirm");
         }}
         onCancel={close}
       />
 
       <ExitGameModal
-        open={open === "exit"}
+        open={open === "leave-game"}
         onCancel={close}
-        onExitGame={onExitGame}
+        onExitGame={() => {
+          close("confirm");
+          onExitGame();
+        }}
       />
 
       <ConfirmDialog
@@ -91,7 +121,7 @@ export const Help: FC<Props> = (props) => {
         onCancel={close}
         onConfirm={() => {
           onUndo();
-          close();
+          close("confirm");
         }}
       />
     </>

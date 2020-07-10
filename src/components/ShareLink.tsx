@@ -10,6 +10,7 @@ import {
   Fade,
 } from "@material-ui/core";
 import zIndex from "@material-ui/core/styles/zIndex";
+import ReactGA from "react-ga";
 
 interface Props {
   gameId: string;
@@ -33,6 +34,11 @@ export const ShareLink: FC<Props> = (props) => {
         color="secondary"
         inputRef={copyInput}
         onClick={() => {
+          ReactGA.event({
+            category: "share-link",
+            action: "click",
+            label: window.location.pathname,
+          });
           setOpen(true);
           const start = copyInput.current?.selectionStart || 0;
           const end = copyInput.current?.selectionEnd || 0;

@@ -6,6 +6,11 @@
     "access": true,
     "error": "warn"
   },
+  "redirects": {
+    "/**": {
+      "url": "shipwreck-arcana.xyz"
+    }
+  },
   "routes": {
     "/**": "index.html"
   },

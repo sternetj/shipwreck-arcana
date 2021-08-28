@@ -40,7 +40,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:rules": "firebase-bolt ./rules/production.bolt"
+    "build:rules": "firebase-bolt ./rules/production.bolt",
+    "deploy": "aws s3 sync build/ s3://shipwreck-arcana"
   },
   "eslintConfig": {
     "extends": "react-app"

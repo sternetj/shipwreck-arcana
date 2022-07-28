@@ -11,6 +11,9 @@ import {
 } from "@material-ui/core";
 import zIndex from "@material-ui/core/styles/zIndex";
 import ReactGA from "react-ga";
+import { isMobile as checkIsMobile } from "is-mobile";
+
+const isMobile = checkIsMobile();
 
 interface Props {
   gameId: string;
@@ -22,13 +25,15 @@ export const ShareLink: FC<Props> = (props) => {
   const copyInput = useRef<HTMLInputElement>();
   const { gameId, style } = props;
 
+  const link = `${window.location.origin}/join?name=${gameId}`;
+
   return (
     <Grid container justify="center" style={style}>
       <Typography variant="caption">
         Invite your friends by clicking this link and sharing it with them
       </Typography>
       <Input
-        value={`${window.location.origin}/join?name=${gameId}`}
+        value={link}
         readOnly
         fullWidth
         color="secondary"
@@ -39,13 +44,23 @@ export const ShareLink: FC<Props> = (props) => {
             action: "click",
             label: window.location.pathname,
           });
-          setOpen(true);
-          const start = copyInput.current?.selectionStart || 0;
-          const end = copyInput.current?.selectionEnd || 0;
-          copyInput.current?.select();
-          document.execCommand("copy");
-          copyInput.current?.setSelectionRange(start, end);
-          setTimeout(() => setOpen(false), 1250);
+
+          let nav = navigator as any;
+          if (nav.share && isMobile) {
+            nav.share({
+              title: `Join a Game of Shipwreck Arcana!`,
+              text: "Join a Game of Shipwreck Arcana! – Your friends are waiting, tap the link to start playing!",
+              url: link,
+            });
+          } else {
+            setOpen(true);
+            const start = copyInput.current?.selectionStart || 0;
+            const end = copyInput.current?.selectionEnd || 0;
+            copyInput.current?.select();
+            document.execCommand("copy");
+            copyInput.current?.setSelectionRange(start, end);
+            setTimeout(() => setOpen(false), 1250);
+          }
         }}
         endAdornment={<FilterNone />}
       />

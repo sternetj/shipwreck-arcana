@@ -76,7 +76,7 @@ export function useGame(id: string) {
     cardToUpdate.addFate(fate);
 
     let recentlyPlayed = value.recentlyPlayed || null;
-    if (source !== index) {
+    if (source !== index || playedOnHours) {
       recentlyPlayed = {
         source: index,
         fate,
@@ -98,7 +98,7 @@ export function useGame(id: string) {
   const discardFate = ({ value: fate, source }: DropFate) => {
     if (!value) return;
     const snapshot = createSnapshot(value);
-    let playedOnHours = value.playedOnHours;
+    let playedOnHours = value.playedOnHours || null;
 
     if (typeof source === "string") {
       const current = value.players[source];

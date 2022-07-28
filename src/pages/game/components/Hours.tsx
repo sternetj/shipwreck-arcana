@@ -1,7 +1,16 @@
-import React, { FC } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { Card as CardClass } from "../../../services/game";
 import { Card, CardProps } from "./Card";
-import { Grid, styled } from "@material-ui/core";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  styled,
+  Typography,
+} from "@material-ui/core";
 import { FateVal } from "./Fate";
 import { SteppedLineTo } from "./SteppedLineTo";
 
@@ -12,12 +21,27 @@ type Props = Omit<CardProps, "card" | "index"> & {
   points: number;
   playedOnHours?: FateVal;
   fateIndex?: number;
+  activePlayerName?: string;
 };
 
 export const Hours: FC<Props> = (props) => {
-  const { doom, points, playedOnHours, fateIndex = -1, ...rest } = props;
+  const {
+    doom,
+    points,
+    playedOnHours,
+    fateIndex = -1,
+    activePlayerName,
+    ...rest
+  } = props;
   const same = doom === points;
   const showLine = !!playedOnHours && fateIndex > -1;
+  const [hoursModalOpen, setHoursModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (showLine) {
+      setHoursModalOpen(true);
+    }
+  }, [playedOnHours, fateIndex, showLine]);
 
   return (
     <Container style={{ alignItems: "center" }}>
@@ -39,6 +63,26 @@ export const Hours: FC<Props> = (props) => {
           borderWidth={2}
         />
       )}
+      <Dialog open={hoursModalOpen}>
+        <DialogTitle>Played On Hours!</DialogTitle>
+        <DialogContent style={{ padding: "0px 24px 24px 24px" }}>
+          <Typography variant="body1">
+            {activePlayerName} played on The Hours.
+            <br />
+            This means they are unable to play on any of the other 4 cards in
+            play
+          </Typography>
+          {/* TODO Show dynamic content here */}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="inherit"
+            onClick={() => setHoursModalOpen(false)}>
+            Okay
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

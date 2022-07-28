@@ -22,7 +22,9 @@ enum Steps {
 
 const JoinGame: FC = () => {
   const { search } = useLocation();
-  const { player, name } = qs.parse(search, { ignoreQueryPrefix: true });
+  const { player, name } = qs.parse(search, {
+    ignoreQueryPrefix: true,
+  }) as Record<string, string>;
   const router = useHistory();
   const [slide, setSlide] = useState(0);
   const [type, setType] = useState<ConnectType>();

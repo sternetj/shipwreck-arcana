@@ -29,14 +29,15 @@ const Backend: any = isMobile ? TouchBackend : Html5Backend;
 const Game = () => {
   const router = useHistory();
   const { search } = useLocation();
-  const { name, player } = qs.parse(search, { ignoreQueryPrefix: true });
+  const { name, player } = qs.parse(search, {
+    ignoreQueryPrefix: true,
+  }) as Record<string, string>;
   const [cardToFade, setCardToFade] = useState<1 | 2 | 3 | 4>();
   const [powerToPlay, setPowerToPlay] = useState<CardClass>();
   const [fateToReveal, setFateToReveal] = useState<FateVal>();
   const [adjustPointsOpen, setAdjustPointsOpen] = useState(false);
-  const [spectatorModalShown, setSpectatorModalShown] = useState<boolean>(
-    false,
-  );
+  const [spectatorModalShown, setSpectatorModalShown] =
+    useState<boolean>(false);
   const [playerId] = useState(
     player || window.localStorage.getItem("playerId") || "",
   );
@@ -87,6 +88,7 @@ const Game = () => {
   const sortedPlayers = sortPlayers(players, playerId);
   const revealedFateIndex = fates.indexOf(revealed!);
   const isCurrentTurn = playerId === activePlayer;
+  const activePlayerName = players[activePlayer].playerName;
 
   let recentIndex = -1;
   if (1 === recentlyPlayed?.source && playedOnHours) {
@@ -138,7 +140,9 @@ const Game = () => {
   };
 
   if (process.env.NODE_ENV !== "production") {
-    console.log(JSON.stringify(value, null, 2));
+    const { snapshot, ...rest } = value;
+    (rest as any).hasSnapshot = !!snapshot;
+    console.log(JSON.stringify(rest, null, 2));
   }
   return (
     <>
@@ -185,6 +189,7 @@ const Game = () => {
               fateIndex={recentIndex}
               onDropFate={(val) => !spectator && playFate("hours", val)}
               onClick={beginAdjustScore}
+              activePlayerName={activePlayerName}
             />
             {cardsIndices.map((i) => (
               <Card

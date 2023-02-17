@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import { Grid, Button, Typography, styled, TextField } from "@material-ui/core";
 import { useLocalStorage } from "./use-local-storage";
 
@@ -10,9 +10,10 @@ interface WelcomeProps {
   error?: string;
   onSubmit: (name: string) => any;
   onBack: () => any;
+  children?: React.ReactNode;
 }
 
-const CreateGame: FC<WelcomeProps> = (props) => {
+const CreateGame = (props: WelcomeProps) => {
   const { onSubmit, label, title, dataKey, error, children } = props;
   const { placeholder = "Name", onBack } = props;
   const [name, setName] = useLocalStorage(dataKey, "");
@@ -28,6 +29,7 @@ const CreateGame: FC<WelcomeProps> = (props) => {
         value={name}
         inputProps={{
           maxLength: 25,
+          style: { textAlign: "center" },
         }}
         error={!!error || !!requiredError}
         helperText={error || requiredError}

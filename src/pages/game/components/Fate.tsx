@@ -14,11 +14,15 @@ interface Props {
 }
 export const Fate: FC<Props> = (props) => {
   const { num: value, source, styles, onClick, highlight, className } = props;
-  const [{ isDragging }, drag, dragPreview] = useDrag({
-    item: { type: "fate", value, source },
-    canDrag: !!source,
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
+  const [{ isDragging }, drag, dragPreview] = useDrag(
+    {
+      type: "fate",
+      item: { type: "fate", value, source },
+      canDrag: !!source,
+      collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+    },
+    [source, value],
+  );
   const handler = onClick || (() => {});
   const longPressProps = useLongPress(handler, !isDragging);
   useDragScroll(isDragging);

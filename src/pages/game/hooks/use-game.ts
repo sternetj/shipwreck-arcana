@@ -10,13 +10,14 @@ import { FateVal } from "../components/Fate";
 import { DropFate, DropPower } from "../components/Card";
 import { TokenColor } from "../components/token";
 import { shuffle } from "../../../services/shuffle";
+import * as firebase from "firebase/database";
 
 export function useGame(id: string) {
   const ref = getGame(id);
   const [raw, loading] = useObjectVal<GameState>(ref);
   const value = deserializeGame(raw);
 
-  const updateScore = (points: Score) => ref.update({ ...points });
+  const updateScore = (points: Score) => firebase.update(ref, { ...points });
 
   const fadeCard = (index: CardIndex) => {
     if (!value) return;
@@ -33,7 +34,7 @@ export function useGame(id: string) {
       value.discard = [];
     }
 
-    ref.update({
+    firebase.update(ref, {
       snapshot,
       discard: value.discard,
       deck: value.deck,
@@ -83,7 +84,7 @@ export function useGame(id: string) {
       };
     }
 
-    ref.update({
+    firebase.update(ref, {
       snapshot,
       playedOnHours,
       recentlyPlayed,
@@ -111,7 +112,7 @@ export function useGame(id: string) {
       playedOnHours = null as any;
     }
 
-    ref.update({
+    firebase.update(ref, {
       snapshot,
       fates: (value.fates || []).concat(fate),
       recentlyPlayed: null,
@@ -139,7 +140,7 @@ export function useGame(id: string) {
     }
 
     const drawn = value.fates.pop();
-    ref.update({
+    firebase.update(ref, {
       snapshot,
       fates: value.fates,
       recentlyPlayed: null,
@@ -159,7 +160,7 @@ export function useGame(id: string) {
     const current = value.players[playerId];
     current.tokens[fate] = flipToken;
 
-    ref.update({
+    firebase.update(ref, {
       players: {
         ...value.players,
         [playerId]: {
@@ -187,7 +188,7 @@ export function useGame(id: string) {
       value.discard = [];
     }
 
-    ref.update({
+    firebase.update(ref, {
       snapshot,
       activePowers: value.activePowers,
       discard: value.discard,
@@ -209,7 +210,7 @@ export function useGame(id: string) {
       value.powers.splice(powerIndex, 1);
     }
 
-    ref.update({
+    firebase.update(ref, {
       snapshot,
       powers: value.powers,
       cards: {
@@ -228,13 +229,13 @@ export function useGame(id: string) {
         value.activePlayer === playerId
           ? getNextPlayer(value.players, playerId)
           : value.activePlayer;
-      ref.update({
+      firebase.update(ref, {
         snapshot: null,
         players: remainingPlayers,
         activePlayer,
       });
     } else {
-      ref.remove();
+      firebase.remove(ref);
     }
   };
 
@@ -255,7 +256,7 @@ export function useGame(id: string) {
       value.players[pId].revealed = null as any;
     });
 
-    ref.update({
+    firebase.update(ref, {
       recentlyPlayed: null,
       snapshot: null,
       playedOnHours: null,
@@ -277,7 +278,7 @@ export function useGame(id: string) {
     const current = value.players[playerId];
     current.revealed = fate;
 
-    ref.update({
+    firebase.update(ref, {
       players: {
         ...value.players,
         [playerId]: {
@@ -289,7 +290,7 @@ export function useGame(id: string) {
 
   const removeActivePowers = () => {
     const snapshot = createSnapshot(value);
-    ref.update({
+    firebase.update(ref, {
       snapshot,
       activePowers: null as any,
     });
@@ -315,7 +316,7 @@ export function useGame(id: string) {
         {} as GameState["players"],
       );
 
-    ref.set({
+    firebase.set(ref, {
       ...oldState,
       points: value.points,
       doom: value.doom,
@@ -328,7 +329,7 @@ export function useGame(id: string) {
     const snapshot = createSnapshot(value);
     const current = value.players[playerId];
 
-    ref.update({
+    firebase.update(ref, {
       snapshot,
       playedOnHours: null,
       activePlayer: getNextPlayer(value.players, playerId),

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import qs from "qs";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Card as CardClass } from "../../services/game";
 import { Grid, CircularProgress, Button, Slide } from "@material-ui/core";
 import { Card } from "./components/Card";
@@ -8,7 +8,7 @@ import { ConfirmDialog } from "./components/ConfirmDialog";
 import { Hours } from "./components/Hours";
 import { Fate, FateVal } from "./components/Fate";
 import { DndProvider } from "react-dnd";
-import Html5Backend from "react-dnd-html5-backend";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { AdjustScore } from "./components/AdjustScore";
 import { useGame, CardIndex, GameState } from "./hooks/use-game";
@@ -24,10 +24,10 @@ import { ActivePowersRow } from "./components/ActivePowersRow";
 import { PlayerTokensRow } from "./components/PlayerTokensRow";
 
 const isMobile = checkIsMobile();
-const Backend: any = isMobile ? TouchBackend : Html5Backend;
+const Backend: any = isMobile ? TouchBackend : HTML5Backend;
 
 const Game = () => {
-  const router = useHistory();
+  const navigateTo = useNavigate();
   const { search } = useLocation();
   const { name, player } = qs.parse(search, {
     ignoreQueryPrefix: true,
@@ -66,7 +66,7 @@ const Game = () => {
       <NoGame
         gameId={name}
         onContinue={() => {
-          router.push("/");
+          navigateTo("/");
         }}
       />
     );
@@ -142,7 +142,7 @@ const Game = () => {
   if (process.env.NODE_ENV !== "production") {
     const { snapshot, ...rest } = value;
     (rest as any).hasSnapshot = !!snapshot;
-    console.log(JSON.stringify(rest, null, 2));
+    // console.log(JSON.stringify(rest, null, 2));
   }
   return (
     <>
@@ -155,7 +155,7 @@ const Game = () => {
           onUndo={() => !spectator && undoAction()}
           onExitGame={() => {
             leaveGame(playerId);
-            router.push("/");
+            navigateTo("/");
           }}
         />
         <Grid
@@ -327,7 +327,7 @@ const Game = () => {
           setSpectatorModalShown(true);
         }}
         onJoinOrLeave={() => {
-          router.push(canJoin ? `/join${search}` : `/`);
+          navigateTo(canJoin ? `/join${search}` : `/`);
           setSpectatorModalShown(true);
         }}
       />

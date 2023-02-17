@@ -1,10 +1,11 @@
-import React, { FC, CSSProperties } from "react";
+import React, { CSSProperties } from "react";
 import { styled, Grid } from "@material-ui/core";
 
 interface Props {
   style?: CSSProperties;
+  children?: React.ReactNode;
 }
-export const Divider: FC<Props> = (props) => {
+export const Divider = (props: Props) => {
   const { children, style } = props;
 
   return (

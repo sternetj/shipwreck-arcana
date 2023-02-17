@@ -4,9 +4,10 @@ import { styled, Grid, Dialog } from "@material-ui/core";
 
 export interface BaseCardProps {
   card: CardClass;
+  children?: React.ReactNode;
 }
 
-export const PowerAdornment: React.FC<BaseCardProps> = ({ children, card }) => {
+export const PowerAdornment = ({ children, card }: BaseCardProps) => {
   const [preview, setPreview] = useState(false);
 
   return (

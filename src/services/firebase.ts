@@ -1,14 +1,10 @@
-import * as firebase from "firebase";
+import * as firebase from "firebase/app";
+import * as firebaseDb from "firebase/database";
 import { v4 as uuid } from "uuid";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors,
-} from "unique-names-generator";
 import { cards } from "./game/cards";
 import { TokenColor } from "../pages/game/components/token";
 import { shuffle } from "./shuffle";
+import { sample } from "lodash";
 
 const playerId = window.localStorage.getItem("playerId") || uuid();
 window.localStorage.setItem("playerId", playerId);
@@ -24,17 +20,16 @@ const config = {
   measurementId: "G-G7PRZH5RB8",
 };
 
-firebase.initializeApp(config);
-const db = firebase.database();
-const databaseRef = db.ref();
+const app = firebase.initializeApp(config);
+const db = firebaseDb.getDatabase(app);
+const databaseRef = firebaseDb.ref(db);
 
-export const generateGameName = () =>
-  uniqueNamesGenerator({
-    dictionaries: [[...adjectives, ...colors], animals],
-    separator: "-",
-    style: "lowerCase",
-    length: 2,
-  });
+export const generateGameName = () => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const s = sample;
+
+  return `${s(chars)}${s(chars)}${s(chars)}${s(chars)}`;
+};
 
 export const createGame = (
   gameId: string,
@@ -42,7 +37,7 @@ export const createGame = (
   player?: string,
   color: TokenColor = "green",
 ) => {
-  const ref = databaseRef.child(gameId);
+  const ref = firebaseDb.child(databaseRef, gameId);
   const pId = player || playerId;
   const deck = shuffle(cards);
   const activeCards = {
@@ -52,7 +47,7 @@ export const createGame = (
     4: deck.shift(),
   };
 
-  ref.set({
+  firebaseDb.set(ref, {
     powers: [],
     deck,
     discard: [],
@@ -78,55 +73,44 @@ export const createGame = (
 };
 
 export const gameExists = async (gameId: string) => {
-  return new Promise((resolve) => {
-    const ref = db.ref(gameId);
-    ref.once("value", function (snapshot) {
-      resolve(snapshot.val());
-    });
-  });
+  const ref = firebaseDb.child(databaseRef, gameId);
+  const snapshot = await firebaseDb.get(ref);
+  return snapshot.val();
 };
 
-export const joinGame = (
+export const joinGame = async (
   gameId: string,
   playerName: string,
   player?: string,
 ) => {
-  return new Promise<{ name: string; ref: firebase.database.Reference }>(
-    (resolve, reject) => {
-      const ref = db.ref(`${gameId}/players`);
-      ref.once("value", function (snapshot) {
-        const currentColors = Object.values(snapshot.val()).map(
-          (v: any) => v.color,
-        );
-        const newColor = opponentColors.find(
-          (c) => currentColors.indexOf(c) === -1,
-        );
-        if (!newColor) {
-          return reject("Game is full");
-        }
+  const ref = firebaseDb.child(databaseRef, `${gameId}/players`);
+  const snapshot = await firebaseDb.get(ref);
+  console.log(snapshot);
+  const currentColors = Object.values(snapshot.val()).map((v: any) => v.color);
+  const newColor = opponentColors.find((c) => currentColors.indexOf(c) === -1);
+  if (!newColor) {
+    throw new Error("Game is full");
+  }
 
-        ref.update({
-          [player || playerId]: {
-            playerName,
-            fates: [],
-            color: newColor,
-            tokens: defaultTokens,
-          },
-        });
-
-        resolve({
-          name: gameId,
-          ref,
-        });
-      });
+  await firebaseDb.update(ref, {
+    [player || playerId]: {
+      playerName,
+      fates: [],
+      color: newColor,
+      tokens: defaultTokens,
     },
-  );
+  });
+
+  return {
+    name: gameId,
+    ref,
+  };
 };
 
 export const getGame = (gameId: string) => {
   console.log("fetch game " + gameId);
 
-  return db.ref(gameId);
+  return firebaseDb.ref(db, gameId);
 };
 
 const fates = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7];

@@ -21,11 +21,15 @@ export const BaseCard = React.forwardRef<
   const { children, card, transition = "none", showPower, ...rest } = props;
   const { onLongPress, ...imgProps } = rest;
   const [preview, setPreview] = useState(false);
-  const [{ isDragging }, drag, dragPreview] = useDrag({
-    item: { type: "power", value: card },
-    canDrag: card.canAttach && showPower,
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
+  const [{ isDragging }, drag, dragPreview] = useDrag(
+    {
+      type: "power",
+      item: { type: "power", value: card },
+      canDrag: card.canAttach && showPower,
+      collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+    },
+    [card.canAttach, showPower, card],
+  );
   const longPress = useLongPress(onLongPress, !isDragging);
   useDragScroll(isDragging);
 

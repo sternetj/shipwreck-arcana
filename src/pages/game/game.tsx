@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import qs from "qs";
 import { useLocation, useNavigate } from "react-router-dom";
+import confetti from "canvas-confetti";
 import { Card as CardClass } from "../../services/game";
 import { Grid, CircularProgress, Button, Slide } from "@material-ui/core";
 import { Card } from "./components/Card";
@@ -60,6 +61,21 @@ const Game = () => {
       };
     }
   }, [leaveGame, playerId, numberOfPlayers]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (value?.points === 7 && value?.doom < 7) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+
+  }, [value?.points, value?.doom]);
 
   if (!loading && !value) {
     return (
@@ -174,8 +190,7 @@ const Game = () => {
                     .slice(1, 3)
                     .map(
                       (_, i) =>
-                        `${2 * i + 1}px ${2 * i + 1}px 0 ${
-                          2 + i
+                        `${2 * i + 1}px ${2 * i + 1}px 0 ${2 + i
                         }px hsl(0, 0%, ${35 - 10 * i}%)`,
                     )
                     .join(", "),

@@ -267,7 +267,7 @@ export function useGame(id: string) {
       players: value.players,
       discard: [],
       cards: activeCards,
-      fates: shuffle(fates),
+      fates: shuffle(fates.slice()),
       doom: 0,
       points: 0,
     });

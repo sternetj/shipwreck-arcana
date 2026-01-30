@@ -61,7 +61,7 @@ export const createGame = (
         tokens: defaultTokens,
       },
     },
-    fates: shuffle(fates),
+    fates: shuffle(fates.slice()),
     doom: 0,
     points: 0,
   });

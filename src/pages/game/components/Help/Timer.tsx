@@ -15,7 +15,7 @@ import { useInterval } from "usehooks-ts";
 export const Timer = ({ gameId }: { gameId: string }) => {
   const { value, updateTimer } = useGame(gameId);
   const { duration = 60, endTime } = value?.timer ?? {};
-  const [_, setTick] = useState(0);
+  const [, setTick] = useState(0);
 
   const isTiming = !!endTime;
   const remaining = isTiming

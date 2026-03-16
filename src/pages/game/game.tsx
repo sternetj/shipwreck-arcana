@@ -65,10 +65,12 @@ const Game = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (value?.points === 7 && value?.doom < 7) {
+        const scalar = Math.max(1, window.innerWidth / 1000);
         confetti({
           particleCount: 100,
-          spread: 70,
+          spread: Math.min(150, 70 * scalar * 1.5),
           origin: { y: 0.6 },
+          scalar,
         });
       }
     }, 500);

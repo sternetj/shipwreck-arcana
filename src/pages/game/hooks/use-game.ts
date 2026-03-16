@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useObjectVal } from "react-firebase-hooks/database";
 import {
   getGame,
@@ -13,7 +14,7 @@ import { shuffle } from "../../../services/shuffle";
 import * as firebase from "firebase/database";
 
 export function useGame(id: string) {
-  const ref = getGame(id);
+  const ref = useMemo(() => getGame(id), [id]);
   const [raw, loading] = useObjectVal<GameState>(ref);
   const value = deserializeGame(raw);
 
@@ -343,6 +344,17 @@ export function useGame(id: string) {
     });
   };
 
+  const updateTimer = (timer: { duration?: number; endTime?: string }) => {
+    if (!value) return;
+
+    firebase.update(ref, {
+      timer: {
+        ...value.timer,
+        ...timer,
+      },
+    });
+  };
+
   return {
     loading,
     value,
@@ -360,6 +372,7 @@ export function useGame(id: string) {
     removeActivePowers,
     undoAction,
     endTurn,
+    updateTimer,
   };
 }
 
@@ -419,6 +432,10 @@ export interface GameState {
   powers: Card[];
   activePowers: Card[];
   snapshot: string;
+  timer?: {
+    duration: number;
+    endTime: string;
+  };
 }
 
 export interface Player {

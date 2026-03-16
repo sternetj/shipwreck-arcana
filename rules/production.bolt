@@ -28,6 +28,7 @@ type Game {
   recentlyPlayed: Recent | Null,
   snapshot: String | Null,
   activePlayer: String | Null,
+  timer: Timer | Null,
 }
 
 type Card extends BaseCard {
@@ -37,6 +38,11 @@ type Card extends BaseCard {
 type Recent {
   fate: Fate,
   source: CardKey,
+}
+
+type Timer {
+  duration: Number | Null,
+  endTime: String | Null,
 }
 
 type BaseCard {

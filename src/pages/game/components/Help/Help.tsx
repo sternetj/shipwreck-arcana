@@ -1,16 +1,20 @@
-import React, { FC, useState, useMemo } from "react";
+import React, { FC, useState, useMemo, useEffect } from "react";
 import { IconButton, Grid } from "@material-ui/core";
 
 import HelpRounded from "@material-ui/icons/HelpRounded";
 import ExitToApp from "@material-ui/icons/ExitToAppOutlined";
 import Sync from "@material-ui/icons/Sync";
 import Undo from "@material-ui/icons/Undo";
+import TimerIcon from "@material-ui/icons/Timer";
+import TimerOffIcon from "@material-ui/icons/TimerOff";
 import { HowToPlayModal } from "./HowToPlayModal";
 import { ExitGameModal } from "./ExitGameModal";
 import { NewGameModal } from "./NewGameModal";
 import { ConfirmDialog } from "../ConfirmDialog";
 import { isMobile as checkIsMobile } from "is-mobile";
 import ReactGA from "react-ga";
+import { Timer } from "./Timer";
+import { useGame } from "../../hooks/use-game";
 
 const isMobile = checkIsMobile();
 
@@ -25,9 +29,17 @@ interface Props {
 
 export const Help: FC<Props> = (props) => {
   const { gameId, canControl, canUndo, onNewGame, onUndo, onExitGame } = props;
+  const { value: { timer } = {} } = useGame(gameId);
   const [open, setOpen] = useState<
     "howTo" | "leave-game" | "new-game" | "undo"
   >();
+  const [timerOpen, setTimerOpen] = useState(false);
+
+  useEffect(() => {
+    if (!!timer?.endTime) {
+      setTimerOpen(true);
+    }
+  }, [timer?.endTime]);
 
   const close = useMemo(
     () => (action: string = "cancel") => {
@@ -89,6 +101,16 @@ export const Help: FC<Props> = (props) => {
           }}>
           <ExitToApp />
         </IconButton>
+        <IconButton
+          title={timerOpen ? "Hide Timer" : "Show Timer"}
+          color="inherit"
+          onClick={() => {
+            setTimerOpen((c) => !c);
+            ReactGA.event({ category: "create-timer", action: "initiate" });
+          }}
+        >
+          {timerOpen ? <TimerOffIcon /> : <TimerIcon />}
+        </IconButton>
       </Grid>
 
       <HowToPlayModal
@@ -124,6 +146,8 @@ export const Help: FC<Props> = (props) => {
           close("confirm");
         }}
       />
+
+      {timerOpen && <Timer gameId={gameId} />}
     </>
   );
 };

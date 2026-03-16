@@ -6,7 +6,6 @@ import {
   Typography,
   IconButton,
   LinearProgress,
-  useTheme,
 } from "@material-ui/core";
 import AddCircle from "@material-ui/icons/AddCircleOutline";
 import RemoveCircle from "@material-ui/icons/RemoveCircleOutline";
@@ -16,32 +15,22 @@ import { useInterval } from "usehooks-ts";
 export const Timer = ({ gameId }: { gameId: string }) => {
   const { value, updateTimer } = useGame(gameId);
   const { duration = 60, endTime } = value?.timer ?? {};
-  const [_, setState] = useState(1);
-  const theme = useTheme();
+  const [_, setTick] = useState(0);
 
-  let isTiming = false;
-  let isOver = false;
-  let seconds = duration % 60;
-  let minutes = (duration - seconds) / 60;
-  let dur = duration;
-
-  if (endTime) {
-    isTiming = true;
-    const et = new Date(endTime);
-    const now = new Date();
-    isOver = et < now;
-    dur = isOver
-      ? 0
-      : Math.round(Math.abs(et.getTime() - now.getTime()) / 1000);
-    seconds = dur % 60;
-    minutes = (dur - seconds) / 60;
-  }
+  const isTiming = !!endTime;
+  const remaining = isTiming
+    ? Math.round((new Date(endTime).getTime() - Date.now()) / 1000)
+    : duration;
+  const isOver = isTiming && remaining <= 0;
+  const display = isTiming ? Math.abs(remaining) : duration;
+  const minutes = Math.floor(display / 60);
+  const seconds = display % 60;
 
   useInterval(
     () => {
-      setState((v) => v + 1);
+      setTick((v) => v + 1);
     },
-    endTime && !isOver ? 1000 : null
+    endTime ? 1000 : null
   );
 
   return (
@@ -73,11 +62,11 @@ export const Timer = ({ gameId }: { gameId: string }) => {
         <Typography
           style={{
             textAlign: "center",
-            transition: "color 0.2s",
-            color: isOver ? theme.palette.error.dark : "initial",
+            color: isOver ? "#c62828" : "initial",
           }}
           variant="h4"
         >
+          {isOver ? "-" : ""}
           {minutes.toString().padStart(2, "0")}:
           {seconds.toString().padStart(2, "0")}
         </Typography>
@@ -93,7 +82,7 @@ export const Timer = ({ gameId }: { gameId: string }) => {
       {(isTiming || isOver) && (
         <LinearProgress
           variant="determinate"
-          value={(100 * (duration - dur)) / duration}
+          value={Math.min(100, (100 * (duration - Math.max(0, remaining))) / duration)}
           style={{
             width: "100%",
             marginBottom: 8,

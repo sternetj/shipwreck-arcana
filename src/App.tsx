@@ -52,7 +52,7 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 };
